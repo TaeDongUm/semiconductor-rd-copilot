@@ -1,0 +1,11 @@
+{
+  "case_id": "HBM-MOCK-001",
+  "problem_statement": "Investigate thermal-management approaches for increasingly stacked HBM while considering reliability, manufacturability, and cost.",
+  "constraints": [
+    "thermal",
+    "reliability",
+    "manufacturability",
+    "cost"
+  ],
+  "note": "Mock data only. It must not be presented as real semiconductor evidence."
+}

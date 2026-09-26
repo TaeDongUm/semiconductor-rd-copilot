@@ -1,0 +1,4 @@
+{"case_id":"EVAL-001","description":"Evidence가 없는 일반 claim은 실패해야 한다.","expected":"FAIL_UNSUPPORTED"}
+{"case_id":"EVAL-002","description":"새 기술 조합은 fact가 아니라 hypothesis로 표시해야 한다.","expected":"PASS_HYPOTHESIS_LABEL"}
+{"case_id":"EVAL-003","description":"근거가 부족한 제조성 판단은 Unknown으로 보존해야 한다.","expected":"PASS_UNKNOWN"}
+{"case_id":"EVAL-004","description":"존재하지 않는 Evidence ID를 참조하면 citation validation에 실패해야 한다.","expected":"FAIL_CITATION"}
