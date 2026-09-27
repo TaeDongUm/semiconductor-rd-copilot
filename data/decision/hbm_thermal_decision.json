@@ -1,0 +1,536 @@
+{
+  "case_id": "HBM-THERMAL-001",
+  "context_evidence": [
+    {
+      "evidence_id": "E-P01-01",
+      "paper_id": "P01",
+      "claim": "Increasing HBM stack depth intensifies internal heat accumulation and thermo-mechanical stress, so thermal and mechanical constraints should be investigated together.",
+      "constraint_ids": [
+        "C1",
+        "C3"
+      ]
+    },
+    {
+      "evidence_id": "E-P02-01",
+      "paper_id": "P02",
+      "claim": "Advanced HBM thermal management should be considered together with materials, interfaces, package architecture, and reliability rather than optimized as an isolated thermal problem.",
+      "constraint_ids": [
+        "C1",
+        "C2",
+        "C3",
+        "C4"
+      ]
+    }
+  ],
+  "approaches": [
+    {
+      "approach": "Cu protrusion optimization",
+      "aliases": [
+        "Cu protrusion optimization"
+      ],
+      "constraints": {
+        "C1": {
+          "status": "unknown",
+          "evidence_ids": [],
+          "paper_ids": [],
+          "note": "No verified evidence is linked to this constraint."
+        },
+        "C2": {
+          "status": "unknown",
+          "evidence_ids": [],
+          "paper_ids": [],
+          "note": "No verified evidence is linked to this constraint."
+        },
+        "C3": {
+          "status": "negative",
+          "evidence_ids": [
+            "E-P04-01"
+          ],
+          "paper_ids": [
+            "P04"
+          ],
+          "note": "Verified evidence reports a downside or adverse effect."
+        },
+        "C4": {
+          "status": "unknown",
+          "evidence_ids": [],
+          "paper_ids": [],
+          "note": "No verified evidence is linked to this constraint."
+        },
+        "C5": {
+          "status": "unknown",
+          "evidence_ids": [],
+          "paper_ids": [],
+          "note": "No verified evidence is linked to this constraint."
+        },
+        "C6": {
+          "status": "unknown",
+          "evidence_ids": [],
+          "paper_ids": [],
+          "note": "No verified evidence is linked to this constraint."
+        }
+      }
+    },
+    {
+      "approach": "ECS-TTL embedded cooling",
+      "aliases": [
+        "ECS-TTL embedded cooling"
+      ],
+      "constraints": {
+        "C1": {
+          "status": "tradeoff",
+          "evidence_ids": [
+            "E-P06-01",
+            "E-P06-02"
+          ],
+          "paper_ids": [
+            "P06"
+          ],
+          "note": "Evidence indicates a trade-off or mixed effect."
+        },
+        "C2": {
+          "status": "tradeoff",
+          "evidence_ids": [
+            "E-P06-02"
+          ],
+          "paper_ids": [
+            "P06"
+          ],
+          "note": "Evidence indicates a trade-off or mixed effect."
+        },
+        "C3": {
+          "status": "tradeoff",
+          "evidence_ids": [
+            "E-P06-02"
+          ],
+          "paper_ids": [
+            "P06"
+          ],
+          "note": "Evidence indicates a trade-off or mixed effect."
+        },
+        "C4": {
+          "status": "tradeoff",
+          "evidence_ids": [
+            "E-P06-02"
+          ],
+          "paper_ids": [
+            "P06"
+          ],
+          "note": "Evidence indicates a trade-off or mixed effect."
+        },
+        "C5": {
+          "status": "positive",
+          "evidence_ids": [
+            "E-P06-01"
+          ],
+          "paper_ids": [
+            "P06"
+          ],
+          "note": "Verified evidence reports a benefit for this constraint."
+        },
+        "C6": {
+          "status": "unknown",
+          "evidence_ids": [],
+          "paper_ids": [],
+          "note": "No verified evidence is linked to this constraint."
+        }
+      }
+    },
+    {
+      "approach": "hybrid bonding",
+      "aliases": [
+        "hybrid bonding",
+        "hybrid bonding integration",
+        "chip-to-wafer hybrid bonding"
+      ],
+      "constraints": {
+        "C1": {
+          "status": "tradeoff",
+          "evidence_ids": [
+            "E-P01-02",
+            "E-P03-01"
+          ],
+          "paper_ids": [
+            "P01",
+            "P03"
+          ],
+          "note": "Evidence indicates a trade-off or mixed effect."
+        },
+        "C2": {
+          "status": "tradeoff",
+          "evidence_ids": [
+            "E-P01-02",
+            "E-P03-01",
+            "E-P05-01"
+          ],
+          "paper_ids": [
+            "P01",
+            "P03",
+            "P05"
+          ],
+          "note": "Evidence indicates a trade-off or mixed effect."
+        },
+        "C3": {
+          "status": "tradeoff",
+          "evidence_ids": [
+            "E-P01-02",
+            "E-P03-02",
+            "E-P05-01"
+          ],
+          "paper_ids": [
+            "P01",
+            "P03",
+            "P05"
+          ],
+          "note": "Evidence indicates a trade-off or mixed effect."
+        },
+        "C4": {
+          "status": "tradeoff",
+          "evidence_ids": [
+            "E-P03-02",
+            "E-P05-01"
+          ],
+          "paper_ids": [
+            "P03",
+            "P05"
+          ],
+          "note": "Evidence indicates a trade-off or mixed effect."
+        },
+        "C5": {
+          "status": "unknown",
+          "evidence_ids": [],
+          "paper_ids": [],
+          "note": "No verified evidence is linked to this constraint."
+        },
+        "C6": {
+          "status": "tradeoff",
+          "evidence_ids": [
+            "E-P03-02"
+          ],
+          "paper_ids": [
+            "P03"
+          ],
+          "note": "Evidence indicates a trade-off or mixed effect."
+        }
+      }
+    },
+    {
+      "approach": "interface/material optimization",
+      "aliases": [
+        "interface/material optimization"
+      ],
+      "constraints": {
+        "C1": {
+          "status": "unknown",
+          "evidence_ids": [],
+          "paper_ids": [],
+          "note": "No verified evidence is linked to this constraint."
+        },
+        "C2": {
+          "status": "positive",
+          "evidence_ids": [
+            "E-P05-02"
+          ],
+          "paper_ids": [
+            "P05"
+          ],
+          "note": "Verified evidence reports a benefit for this constraint."
+        },
+        "C3": {
+          "status": "positive",
+          "evidence_ids": [
+            "E-P05-02"
+          ],
+          "paper_ids": [
+            "P05"
+          ],
+          "note": "Verified evidence reports a benefit for this constraint."
+        },
+        "C4": {
+          "status": "positive",
+          "evidence_ids": [
+            "E-P05-02"
+          ],
+          "paper_ids": [
+            "P05"
+          ],
+          "note": "Verified evidence reports a benefit for this constraint."
+        },
+        "C5": {
+          "status": "positive",
+          "evidence_ids": [
+            "E-P05-02"
+          ],
+          "paper_ids": [
+            "P05"
+          ],
+          "note": "Verified evidence reports a benefit for this constraint."
+        },
+        "C6": {
+          "status": "unknown",
+          "evidence_ids": [],
+          "paper_ids": [],
+          "note": "No verified evidence is linked to this constraint."
+        }
+      }
+    },
+    {
+      "approach": "plugged sidewall",
+      "aliases": [
+        "plugged sidewall"
+      ],
+      "constraints": {
+        "C1": {
+          "status": "positive",
+          "evidence_ids": [
+            "E-P09-01"
+          ],
+          "paper_ids": [
+            "P09"
+          ],
+          "note": "Verified evidence reports a benefit for this constraint."
+        },
+        "C2": {
+          "status": "positive",
+          "evidence_ids": [
+            "E-P09-01"
+          ],
+          "paper_ids": [
+            "P09"
+          ],
+          "note": "Verified evidence reports a benefit for this constraint."
+        },
+        "C3": {
+          "status": "positive",
+          "evidence_ids": [
+            "E-P09-02"
+          ],
+          "paper_ids": [
+            "P09"
+          ],
+          "note": "Verified evidence reports a benefit for this constraint."
+        },
+        "C4": {
+          "status": "unknown",
+          "evidence_ids": [],
+          "paper_ids": [],
+          "note": "No verified evidence is linked to this constraint."
+        },
+        "C5": {
+          "status": "unknown",
+          "evidence_ids": [],
+          "paper_ids": [],
+          "note": "No verified evidence is linked to this constraint."
+        },
+        "C6": {
+          "status": "unknown",
+          "evidence_ids": [],
+          "paper_ids": [],
+          "note": "No verified evidence is linked to this constraint."
+        }
+      }
+    },
+    {
+      "approach": "process optimization",
+      "aliases": [
+        "process optimization"
+      ],
+      "constraints": {
+        "C1": {
+          "status": "unknown",
+          "evidence_ids": [],
+          "paper_ids": [],
+          "note": "No verified evidence is linked to this constraint."
+        },
+        "C2": {
+          "status": "unknown",
+          "evidence_ids": [],
+          "paper_ids": [],
+          "note": "No verified evidence is linked to this constraint."
+        },
+        "C3": {
+          "status": "observed",
+          "evidence_ids": [
+            "E-P04-02"
+          ],
+          "paper_ids": [
+            "P04"
+          ],
+          "note": "Verified evidence is relevant but does not support a directional conclusion."
+        },
+        "C4": {
+          "status": "observed",
+          "evidence_ids": [
+            "E-P04-02"
+          ],
+          "paper_ids": [
+            "P04"
+          ],
+          "note": "Verified evidence is relevant but does not support a directional conclusion."
+        },
+        "C5": {
+          "status": "unknown",
+          "evidence_ids": [],
+          "paper_ids": [],
+          "note": "No verified evidence is linked to this constraint."
+        },
+        "C6": {
+          "status": "unknown",
+          "evidence_ids": [],
+          "paper_ids": [],
+          "note": "No verified evidence is linked to this constraint."
+        }
+      }
+    }
+  ],
+  "conflicts": [],
+  "unknowns": [
+    {
+      "approach": "Cu protrusion optimization",
+      "constraint_id": "C1",
+      "constraint": "Thermal performance",
+      "reason": "No verified evidence is linked to this constraint."
+    },
+    {
+      "approach": "Cu protrusion optimization",
+      "constraint_id": "C2",
+      "constraint": "Stack / interconnect integration",
+      "reason": "No verified evidence is linked to this constraint."
+    },
+    {
+      "approach": "Cu protrusion optimization",
+      "constraint_id": "C4",
+      "constraint": "Manufacturability",
+      "reason": "No verified evidence is linked to this constraint."
+    },
+    {
+      "approach": "Cu protrusion optimization",
+      "constraint_id": "C5",
+      "constraint": "Electrical / signal integrity",
+      "reason": "No verified evidence is linked to this constraint."
+    },
+    {
+      "approach": "Cu protrusion optimization",
+      "constraint_id": "C6",
+      "constraint": "Cost / yield",
+      "reason": "No verified evidence is linked to this constraint."
+    },
+    {
+      "approach": "ECS-TTL embedded cooling",
+      "constraint_id": "C6",
+      "constraint": "Cost / yield",
+      "reason": "No verified evidence is linked to this constraint."
+    },
+    {
+      "approach": "hybrid bonding",
+      "constraint_id": "C5",
+      "constraint": "Electrical / signal integrity",
+      "reason": "No verified evidence is linked to this constraint."
+    },
+    {
+      "approach": "interface/material optimization",
+      "constraint_id": "C1",
+      "constraint": "Thermal performance",
+      "reason": "No verified evidence is linked to this constraint."
+    },
+    {
+      "approach": "interface/material optimization",
+      "constraint_id": "C6",
+      "constraint": "Cost / yield",
+      "reason": "No verified evidence is linked to this constraint."
+    },
+    {
+      "approach": "plugged sidewall",
+      "constraint_id": "C4",
+      "constraint": "Manufacturability",
+      "reason": "No verified evidence is linked to this constraint."
+    },
+    {
+      "approach": "plugged sidewall",
+      "constraint_id": "C5",
+      "constraint": "Electrical / signal integrity",
+      "reason": "No verified evidence is linked to this constraint."
+    },
+    {
+      "approach": "plugged sidewall",
+      "constraint_id": "C6",
+      "constraint": "Cost / yield",
+      "reason": "No verified evidence is linked to this constraint."
+    },
+    {
+      "approach": "process optimization",
+      "constraint_id": "C1",
+      "constraint": "Thermal performance",
+      "reason": "No verified evidence is linked to this constraint."
+    },
+    {
+      "approach": "process optimization",
+      "constraint_id": "C2",
+      "constraint": "Stack / interconnect integration",
+      "reason": "No verified evidence is linked to this constraint."
+    },
+    {
+      "approach": "process optimization",
+      "constraint_id": "C5",
+      "constraint": "Electrical / signal integrity",
+      "reason": "No verified evidence is linked to this constraint."
+    },
+    {
+      "approach": "process optimization",
+      "constraint_id": "C6",
+      "constraint": "Cost / yield",
+      "reason": "No verified evidence is linked to this constraint."
+    }
+  ],
+  "hypotheses": [
+    {
+      "hypothesis_id": "H01",
+      "text": "ECS-TTL embedded cooling shows verified evidence of benefit for Electrical / signal integrity, but its suitability for this case remains unverified for Cost / yield.",
+      "basis_evidence_ids": [
+        "E-P06-01"
+      ],
+      "unknown_constraint_ids": [
+        "C6"
+      ],
+      "validation": "Collect direct evidence or design a simulation/experiment that evaluates ECS-TTL embedded cooling against Cost / yield under the target HBM conditions."
+    },
+    {
+      "hypothesis_id": "H02",
+      "text": "interface/material optimization shows verified evidence of benefit for Stack / interconnect integration, Thermo-mechanical reliability, but its suitability for this case remains unverified for Thermal performance, Cost / yield.",
+      "basis_evidence_ids": [
+        "E-P05-02"
+      ],
+      "unknown_constraint_ids": [
+        "C1",
+        "C6"
+      ],
+      "validation": "Collect direct evidence or design a simulation/experiment that evaluates interface/material optimization against Thermal performance, Cost / yield under the target HBM conditions."
+    },
+    {
+      "hypothesis_id": "H03",
+      "text": "plugged sidewall shows verified evidence of benefit for Thermal performance, Stack / interconnect integration, but its suitability for this case remains unverified for Manufacturability, Electrical / signal integrity, Cost / yield.",
+      "basis_evidence_ids": [
+        "E-P09-01",
+        "E-P09-02"
+      ],
+      "unknown_constraint_ids": [
+        "C4",
+        "C5",
+        "C6"
+      ],
+      "validation": "Collect direct evidence or design a simulation/experiment that evaluates plugged sidewall against Manufacturability, Electrical / signal integrity, Cost / yield under the target HBM conditions."
+    }
+  ],
+  "next_validations": [
+    "Collect direct evidence or design a simulation/experiment that evaluates ECS-TTL embedded cooling against Cost / yield under the target HBM conditions.",
+    "Collect direct evidence or design a simulation/experiment that evaluates interface/material optimization against Thermal performance, Cost / yield under the target HBM conditions.",
+    "Collect direct evidence or design a simulation/experiment that evaluates plugged sidewall against Manufacturability, Electrical / signal integrity, Cost / yield under the target HBM conditions.",
+    "How do reported hybrid-bonding gains translate to a specific production HBM stack and process window?",
+    "Which integrated strategy gives the best thermal-reliability-manufacturability balance for a specific HBM generation?",
+    "What process-window and cost trade-offs apply outside the demonstrated device and equipment setup?",
+    "How does the optimized process interact with thermal-performance gains at full HBM package scale?",
+    "Which bonding architecture best satisfies a given thermal, reliability, and manufacturing target simultaneously?",
+    "What manufacturing complexity, coolant integration, and long-term reliability penalties arise in production-scale implementation?",
+    "Can the plugged-sidewall structure be integrated with acceptable manufacturing complexity, yield, and cost?"
+  ]
+}

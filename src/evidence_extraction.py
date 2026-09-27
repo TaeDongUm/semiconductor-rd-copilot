@@ -7,6 +7,7 @@ from typing import Any, Iterable, Literal
 EvidenceKind = Literal["finding", "limitation", "tradeoff", "unknown"]
 SupportLevel = Literal["direct", "indirect"]
 Polarity = Literal["positive", "negative", "mixed", "neutral"]
+EvidenceRole = Literal["context", "approach"]
 
 
 @dataclass(frozen=True)
@@ -30,6 +31,7 @@ class EvidenceRecord:
     constraint_ids: tuple[str, ...]
     support_level: SupportLevel
     polarity: Polarity
+    role: EvidenceRole = "approach"
     metrics: tuple[Metric, ...] = ()
     notes: str = ""
 
@@ -91,7 +93,8 @@ def build_evidence_prompt(
                 "doi": paper.get("doi", ""),
                 "source_scope": source_scope,
                 "source_locator": "abstract / section / page if known",
-                "approach": "technology or method",
+                "approach": "technology or method; use 'problem context' for background-only evidence",
+                "role": "context | approach",
                 "kind": "finding | limitation | tradeoff | unknown",
                 "claim": "paraphrased claim supported by supplied source only",
                 "constraint_ids": ["C1"],
@@ -118,10 +121,11 @@ RULES
 2. Do not turn correlation, simulation, or a limited experiment into a universal causal claim.
 3. Do not invent numbers, materials, process conditions, reliability outcomes, or cost/yield effects.
 4. If the source does not support a constraint, omit that constraint rather than guessing.
-5. Distinguish findings from limitations/trade-offs. Use 'unknown' when the source cannot answer an important point.
-6. Hypotheses are NOT requested here. This step only extracts evidence.
-7. Keep claims concise and paraphrased. Do not copy long source passages.
-8. Return JSON only, matching the schema exactly.
+5. Set role='context' for evidence that only describes the problem/background; set role='approach' for a technology/method being evaluated.
+6. Distinguish findings from limitations/trade-offs. Use 'unknown' when the source cannot answer an important point.
+7. Hypotheses are NOT requested here. This step only extracts evidence.
+8. Keep claims concise and paraphrased. Do not copy long source passages.
+9. Return JSON only, matching the schema exactly.
 
 CASE
 case_id: {case.get('case_id', '')}
@@ -180,6 +184,7 @@ def parse_extraction(payload: str | dict[str, Any]) -> PaperExtraction:
     allowed_kind = {"finding", "limitation", "tradeoff", "unknown"}
     allowed_support = {"direct", "indirect"}
     allowed_polarity = {"positive", "negative", "mixed", "neutral"}
+    allowed_role = {"context", "approach"}
     evidence: list[EvidenceRecord] = []
 
     for index, raw in enumerate(evidence_raw):
@@ -189,12 +194,15 @@ def parse_extraction(payload: str | dict[str, Any]) -> PaperExtraction:
         kind = _require_string(raw, "kind")
         support_level = _require_string(raw, "support_level")
         polarity = _require_string(raw, "polarity")
+        role = str(raw.get("role") or "approach").strip()
         if kind not in allowed_kind:
             raise EvidenceExtractionError(f"invalid kind: {kind}")
         if support_level not in allowed_support:
             raise EvidenceExtractionError(f"invalid support_level: {support_level}")
         if polarity not in allowed_polarity:
             raise EvidenceExtractionError(f"invalid polarity: {polarity}")
+        if role not in allowed_role:
+            raise EvidenceExtractionError(f"invalid role: {role}")
 
         constraints = raw.get("constraint_ids") or []
         if not isinstance(constraints, list) or not all(isinstance(x, str) for x in constraints):
@@ -229,6 +237,7 @@ def parse_extraction(payload: str | dict[str, Any]) -> PaperExtraction:
                 constraint_ids=tuple(constraints),
                 support_level=support_level,  # type: ignore[arg-type]
                 polarity=polarity,  # type: ignore[arg-type]
+                role=role,  # type: ignore[arg-type]
                 metrics=tuple(metrics),
                 notes=str(raw.get("notes") or ""),
             )
