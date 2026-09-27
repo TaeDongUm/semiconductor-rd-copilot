@@ -42,6 +42,9 @@ def load_demo_bundle(run_dir: Path) -> dict[str, Any]:
     if missing:
         raise FileNotFoundError("missing demo artifacts: " + ", ".join(missing))
 
+    output_eval_path = run_dir / "09_output_evaluation.json"
+    e2e_eval_path = run_dir / "10_end_to_end_evaluation.json"
+
     return {
         "run_dir": run_dir,
         "case": load_json(required["case"]),
@@ -51,6 +54,8 @@ def load_demo_bundle(run_dir: Path) -> dict[str, Any]:
         "validation": load_json(required["validation"]),
         "decision": load_json(required["decision"]),
         "brief": required["brief"].read_text(encoding="utf-8") if required["brief"].exists() else "",
+        "output_evaluation": load_json(output_eval_path) if output_eval_path.exists() else None,
+        "end_to_end_evaluation": load_json(e2e_eval_path) if e2e_eval_path.exists() else None,
     }
 
 
@@ -108,12 +113,15 @@ def demo_metrics(bundle: dict[str, Any]) -> dict[str, int]:
 
 
 def find_default_demo_run(project_root: Path) -> Path:
+    final_run = project_root / "runs" / "hbm_thermal_e2e_final_2026-09-27"
+    if final_run.exists():
+        return final_run
     preferred = project_root / "runs" / "hbm_thermal_live_demo_2026-09-27"
     if preferred.exists():
         return preferred
     candidates = sorted((project_root / "runs").glob("*live_demo*")) if (project_root / "runs").exists() else []
     if not candidates:
-        raise FileNotFoundError("no verified live demo run found")
+        raise FileNotFoundError("no verified demo run found")
     return candidates[-1]
 
 def load_retrieval_evaluation(project_root: Path) -> dict[str, Any]:
@@ -163,3 +171,33 @@ def retrieval_summary_metrics(evaluation: dict[str, Any]) -> dict[str, str]:
         "best_at_50": f"{float(best.get('recall_at_50', 0)) * 100:.1f}%",
     }
 
+
+
+def load_output_evaluation_comparison(project_root: Path) -> dict[str, Any]:
+    path = project_root / "evals" / "output" / "hbm_thermal_output_v1_vs_v2.json"
+    if not path.exists():
+        raise FileNotFoundError("output evaluation comparison artifact is missing")
+    return load_json(path)
+
+
+def output_comparison_rows(comparison: dict[str, Any]) -> list[dict[str, str]]:
+    labels = {
+        "citation_validity": "Citation validity",
+        "constraint_precision": "Constraint precision",
+        "constraint_recall": "Constraint recall",
+        "constraint_f1": "Constraint F1",
+        "numeric_precision": "Numeric precision",
+        "numeric_recall": "Numeric recall",
+        "hypothesis_traceability": "Hypothesis traceability",
+    }
+    rows: list[dict[str, str]] = []
+    metrics = comparison.get("metrics", {})
+    for key, label in labels.items():
+        item = metrics.get(key, {})
+        rows.append({
+            "Metric": label,
+            "V1": f"{float(item.get('v1', 0))*100:.1f}%",
+            "V2": f"{float(item.get('v2', 0))*100:.1f}%",
+            "Delta": f"{float(item.get('delta_pp', 0)):+.1f}%p",
+        })
+    return rows

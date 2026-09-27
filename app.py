@@ -14,6 +14,8 @@ from src.ui_data import (
     flatten_evidence,
     load_demo_bundle,
     load_retrieval_evaluation,
+    load_output_evaluation_comparison,
+    output_comparison_rows,
     retrieval_comparison_rows,
     retrieval_summary_metrics,
 )
@@ -49,12 +51,18 @@ def render_verified_demo(bundle: dict) -> None:
     decision = bundle["decision"]
     metrics = demo_metrics(bundle)
 
-    st.subheader("검증된 HBM Thermal 데모")
+    st.subheader("검증된 HBM Thermal End-to-End 데모")
+    e2e = bundle.get("end_to_end_evaluation") or {}
     st.info(
-        "이 화면은 실제 공개 논문 5편으로 검증한 저장 결과를 표시합니다. "
-        "현재 실행환경 제약 때문에 이 Run의 검색 단계는 OpenAlex 직접 호출이 아니라 "
-        "출판사/기관 웹에서 검증한 실제 논문을 동일 스키마로 주입했습니다."
+        "이 화면은 browser OpenAlex 검색과 manual ChatGPT Evidence Extraction으로 수행한 최종 End-to-End Run을 표시합니다. "
+        "검색·Evidence·Decision·Evaluation 단계의 산출물을 같은 Run에 보존했습니다."
     )
+    if e2e:
+        st.success(
+            f"Overall Gate: {e2e.get('overall_gate', '-')} · "
+            f"Retrieval Recall@20: {float(e2e.get('retrieval_recall', 0))*100:.1f}% · "
+            f"Output Constraint Recall: {float(e2e.get('output_constraint_recall', 0))*100:.1f}%"
+        )
 
     c1, c2, c3, c4, c5, c6 = st.columns(6)
     c1.metric("Papers", metrics["papers"])
@@ -71,8 +79,8 @@ def render_verified_demo(bundle: dict) -> None:
             st.markdown(f"**{item['id']} · {item['name']}**")
             st.caption("검색 용어: " + ", ".join(item.get("search_terms", [])))
 
-    result_tab, retrieval_tab, papers_tab, evidence_tab, validation_tab, brief_tab = st.tabs(
-        ["Decision Map", "Retrieval Eval", "Papers", "Evidence", "Validation", "Investigation Brief"]
+    result_tab, retrieval_tab, output_tab, papers_tab, evidence_tab, validation_tab, brief_tab = st.tabs(
+        ["Decision Map", "Retrieval Eval", "Output Eval", "Papers", "Evidence", "Validation", "Investigation Brief"]
     )
 
     with result_tab:
@@ -133,6 +141,46 @@ def render_verified_demo(bundle: dict) -> None:
             )
         except FileNotFoundError as exc:
             st.warning(f"Retrieval 평가 결과를 찾지 못했습니다: {exc}")
+
+
+    with output_tab:
+        st.markdown("### AI Output Evaluation")
+        output_eval = bundle.get("output_evaluation")
+        e2e = bundle.get("end_to_end_evaluation")
+        if output_eval:
+            o1, o2, o3, o4 = st.columns(4)
+            o1.metric("Citation validity", f"{float(output_eval.get('citation_validity', 0))*100:.1f}%")
+            o2.metric("Constraint precision", f"{float(output_eval.get('constraint_precision', 0))*100:.1f}%")
+            o3.metric("Constraint recall", f"{float(output_eval.get('constraint_recall', 0))*100:.1f}%")
+            o4.metric("Constraint F1", f"{float(output_eval.get('constraint_f1', 0))*100:.1f}%")
+            try:
+                comparison = load_output_evaluation_comparison(PROJECT_ROOT)
+                st.markdown("#### V1 → V2")
+                st.dataframe(output_comparison_rows(comparison), use_container_width=True, hide_index=True)
+                st.caption(
+                    f"Missed mapping {comparison.get('missed_constraint_mappings', {}).get('v1', '-')} → "
+                    f"{comparison.get('missed_constraint_mappings', {}).get('v2', '-')} · "
+                    f"Quality Gate {comparison.get('quality_gate', {}).get('v1', '-')} → "
+                    f"{comparison.get('quality_gate', {}).get('v2', '-')}"
+                )
+            except FileNotFoundError:
+                pass
+            st.write({
+                "unsupported_constraint_mappings": output_eval.get("unsupported_constraint_mappings", 0),
+                "missed_constraint_mappings": output_eval.get("missed_constraint_mappings", 0),
+                "hypothesis_traceability": f"{float(output_eval.get('hypothesis_traceability', 0))*100:.1f}%",
+                "quality_gate": output_eval.get("deterministic_gate", "-"),
+            })
+            st.caption(
+                "Deterministic evaluator는 citation / constraint / numeric / hypothesis traceability를 검증합니다. "
+                "자유서술 전체의 의미적 정확성을 완전히 증명하는 평가는 아닙니다."
+            )
+        else:
+            st.warning("Output evaluation artifact가 없습니다.")
+
+        if e2e:
+            st.markdown("### End-to-End Gate")
+            st.json(e2e, expanded=False)
 
     with papers_tab:
         st.markdown("### 근거 논문")

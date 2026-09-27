@@ -10,6 +10,8 @@ from .ui_data import (
     find_default_demo_run,
     load_demo_bundle,
     load_retrieval_evaluation,
+    load_output_evaluation_comparison,
+    output_comparison_rows,
     retrieval_comparison_rows,
     retrieval_summary_metrics,
 )
@@ -19,7 +21,7 @@ def esc(value: object) -> str:
     return html.escape(str(value), quote=True)
 
 
-def render_static_demo(bundle: dict, retrieval: dict | None = None) -> str:
+def render_static_demo(bundle: dict, retrieval: dict | None = None, output_comparison: dict | None = None) -> str:
     case = bundle["case"]
     decision = bundle["decision"]
     metrics = demo_metrics(bundle)
@@ -107,6 +109,65 @@ def render_static_demo(bundle: dict, retrieval: dict | None = None) -> str:
 </section>
 """
 
+
+    output_eval = bundle.get("output_evaluation") or {}
+    e2e_eval = bundle.get("end_to_end_evaluation") or {}
+    output_html = ""
+    if output_eval:
+        output_html = f"""
+<section>
+<h2>AI Output Evaluation</h2>
+<div class=\"metrics\">
+<div class=\"metric\"><strong>Citation validity</strong><span>{float(output_eval.get('citation_validity', 0))*100:.1f}%</span></div>
+<div class=\"metric\"><strong>Constraint precision</strong><span>{float(output_eval.get('constraint_precision', 0))*100:.1f}%</span></div>
+<div class=\"metric\"><strong>Constraint recall</strong><span>{float(output_eval.get('constraint_recall', 0))*100:.1f}%</span></div>
+<div class=\"metric\"><strong>Constraint F1</strong><span>{float(output_eval.get('constraint_f1', 0))*100:.1f}%</span></div>
+</div>
+<p><strong>Unsupported mapping:</strong> {esc(output_eval.get('unsupported_constraint_mappings', 0))} · <strong>Missed mapping:</strong> {esc(output_eval.get('missed_constraint_mappings', 0))} · <strong>Hypothesis traceability:</strong> {float(output_eval.get('hypothesis_traceability', 0))*100:.1f}%</p>
+<p><strong>Quality Gate:</strong> {esc(output_eval.get('deterministic_gate', '-'))}</p>
+<p class=\"muted\">Deterministic evaluator는 citation / constraint / numeric / hypothesis traceability를 검증합니다. 자유서술 전체의 의미적 정확성을 완전히 증명하는 평가는 아닙니다.</p>
+</section>
+"""
+
+    e2e_html = ""
+    if e2e_eval:
+        e2e_html = f"""
+<section>
+<h2>End-to-End Gate</h2>
+<div class=\"metrics\">
+<div class=\"metric\"><strong>Source Coverage</strong><span>{esc(e2e_eval.get('source_coverage', '-'))}</span></div>
+<div class=\"metric\"><strong>Retrieval Recall@20</strong><span>{float(e2e_eval.get('retrieval_recall', 0))*100:.1f}%</span></div>
+<div class=\"metric\"><strong>Evidence Accepted</strong><span>{esc(e2e_eval.get('evidence_accepted', 0))}/{esc(e2e_eval.get('downstream_papers', 0))}</span></div>
+<div class=\"metric\"><strong>Overall Gate</strong><span>{esc(e2e_eval.get('overall_gate', '-'))}</span></div>
+</div>
+<p class=\"muted\">Execution mode: {esc(e2e_eval.get('execution_mode', '-'))}</p>
+</section>
+"""
+
+
+    output_comparison_html = ""
+    if output_comparison is not None:
+        rows = output_comparison_rows(output_comparison)
+        row_html = "".join(
+            "<tr>"
+            f"<td>{esc(row['Metric'])}</td>"
+            f"<td>{esc(row['V1'])}</td>"
+            f"<td>{esc(row['V2'])}</td>"
+            f"<td>{esc(row['Delta'])}</td>"
+            "</tr>"
+            for row in rows
+        )
+        output_comparison_html = f"""
+<section>
+<h2>AI Output Evaluation · V1 → V2</h2>
+<table>
+<thead><tr><th>Metric</th><th>V1</th><th>V2</th><th>Delta</th></tr></thead>
+<tbody>{row_html}</tbody>
+</table>
+<p class=\"muted\">Missed mapping {esc(output_comparison.get('missed_constraint_mappings', {}).get('v1', '-'))} → {esc(output_comparison.get('missed_constraint_mappings', {}).get('v2', '-'))} · Quality Gate {esc(output_comparison.get('quality_gate', {}).get('v1', '-'))} → {esc(output_comparison.get('quality_gate', {}).get('v2', '-'))}</p>
+</section>
+"""
+
     return f'''<!doctype html>
 <html lang="ko">
 <head>
@@ -130,8 +191,8 @@ details {{ padding: 12px 0; border-bottom:1px solid #e6e9ed; }} summary {{ curso
 </head>
 <body><main>
 <h1>Semiconductor R&D Copilot</h1>
-<p class="muted">Evidence-constrained semiconductor R&D investigation · verified HBM Thermal demo</p>
-<div class="notice"><strong>데모 범위</strong><br>{provenance_note}</div>
+<p class="muted">Evidence-constrained semiconductor R&D investigation · verified HBM Thermal end-to-end demo</p>
+<div class="notice"><strong>실행 방식</strong><br>{esc((bundle.get("end_to_end_evaluation") or {}).get("execution_mode", "verified stored run"))}<br><small>{provenance_note}</small></div>
 <div class="metrics">{metric_html}</div>
 <section><h2>Engineering Problem</h2><p>{esc(case['problem_statement'])}</p><h3>Constraints</h3><ul>{constraint_html}</ul></section>
 <section><h2>Approach × Constraint Matrix</h2><p class="muted">+ benefit · − downside · ± trade-off · • 관련 근거 · ? 근거 부족</p><table><thead><tr>{matrix_head}</tr></thead><tbody>{matrix_body}</tbody></table></section>
@@ -139,6 +200,9 @@ details {{ padding: 12px 0; border-bottom:1px solid #e6e9ed; }} summary {{ curso
 <section><h2>Candidate Hypotheses & Next Validation</h2>{hypothesis_html}</section>
 <section><h2>Evidence Papers</h2>{papers_html}</section>
 {retrieval_html}
+{output_comparison_html}
+{output_html}
+{e2e_html}
 <section><h2>Interpretation Rule</h2><p>This demo does not identify a best technology or a proven root cause. It narrows the investigation space using verified evidence and preserves unresolved constraints for human review.</p></section>
 </main></body></html>'''
 
@@ -156,7 +220,11 @@ def main() -> None:
         retrieval = load_retrieval_evaluation(project_root)
     except FileNotFoundError:
         retrieval = None
-    content = render_static_demo(bundle, retrieval)
+    try:
+        output_comparison = load_output_evaluation_comparison(project_root)
+    except FileNotFoundError:
+        output_comparison = None
+    content = render_static_demo(bundle, retrieval, output_comparison)
     output = args.output if args.output.is_absolute() else project_root / args.output
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(content, encoding="utf-8")

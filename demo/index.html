@@ -21,48 +21,48 @@ details { padding: 12px 0; border-bottom:1px solid #e6e9ed; } summary { cursor:p
 </head>
 <body><main>
 <h1>Semiconductor R&D Copilot</h1>
-<p class="muted">Evidence-constrained semiconductor R&D investigation · verified HBM Thermal demo</p>
-<div class="notice"><strong>데모 범위</strong><br>This run validates the downstream real-paper evidence/decision pipeline, not OpenAlex recall or ranking quality.</div>
-<div class="metrics"><div class="metric"><strong>Papers</strong><span>5</span></div><div class="metric"><strong>Evidence</strong><span>5</span></div><div class="metric"><strong>Validation errors</strong><span>0</span></div><div class="metric"><strong>Approaches</strong><span>4</span></div><div class="metric"><strong>Unknowns</strong><span>13</span></div><div class="metric"><strong>Hypotheses</strong><span>2</span></div></div>
+<p class="muted">Evidence-constrained semiconductor R&D investigation · verified HBM Thermal end-to-end demo</p>
+<div class="notice"><strong>실행 방식</strong><br>browser-openalex + manual-chatgpt<br><small></small></div>
+<div class="metrics"><div class="metric"><strong>Papers</strong><span>5</span></div><div class="metric"><strong>Evidence</strong><span>5</span></div><div class="metric"><strong>Validation errors</strong><span>0</span></div><div class="metric"><strong>Approaches</strong><span>4</span></div><div class="metric"><strong>Unknowns</strong><span>9</span></div><div class="metric"><strong>Hypotheses</strong><span>2</span></div></div>
 <section><h2>Engineering Problem</h2><p>HBM 적층 수 증가로 내부 열 축적과 thermal resistance가 커질 때 reliability, manufacturability, signal integrity, cost/yield를 함께 고려하여 조사 우선순위를 구조화한다.</p><h3>Constraints</h3><ul><li><strong>C1 · Thermal performance</strong><br><small>thermal resistance, junction temperature, hotspot, heat dissipation</small></li><li><strong>C2 · Stack / interconnect integration</strong><br><small>hybrid bonding, interconnect, stack height, TSV</small></li><li><strong>C3 · Thermo-mechanical reliability</strong><br><small>thermo-mechanical reliability, CTE mismatch, warpage, delamination</small></li><li><strong>C4 · Manufacturability</strong><br><small>manufacturability, process integration, fabrication, bonding process</small></li><li><strong>C5 · Electrical / signal integrity</strong><br><small>signal integrity, electrical performance, power integrity</small></li><li><strong>C6 · Cost / yield</strong><br><small>yield, cost, process yield</small></li></ul></section>
-<section><h2>Approach × Constraint Matrix</h2><p class="muted">+ benefit · − downside · ± trade-off · • 관련 근거 · ? 근거 부족</p><table><thead><tr><th>Approach</th><th>C1 Thermal performance</th><th>C2 Stack / interconnect integration</th><th>C3 Thermo-mechanical reliability</th><th>C4 Manufacturability</th><th>C5 Electrical / signal integrity</th><th>C6 Cost / yield</th></tr></thead><tbody><tr><td>Cu protrusion optimization</td><td>?</td><td>?</td><td>• (R03)</td><td>• (R03)</td><td>?</td><td>?</td></tr><tr><td>ECS-TTL embedded cooling</td><td>+ (R04)</td><td>?</td><td>?</td><td>?</td><td>+ (R04)</td><td>?</td></tr><tr><td>hybrid bonding</td><td>± (R01,R02)</td><td>± (R01,R02)</td><td>± (R01,R02,R03)</td><td>± (R02)</td><td>?</td><td>± (R02)</td></tr><tr><td>plugged sidewall</td><td>+ (R05)</td><td>?</td><td>+ (R05)</td><td>?</td><td>?</td><td>?</td></tr></tbody></table></section>
-<section><h2>Key Unknowns</h2><ul><li><strong>Cu protrusion optimization</strong> × Thermal performance — No verified evidence is linked to this constraint.</li><li><strong>Cu protrusion optimization</strong> × Stack / interconnect integration — No verified evidence is linked to this constraint.</li><li><strong>Cu protrusion optimization</strong> × Electrical / signal integrity — No verified evidence is linked to this constraint.</li><li><strong>Cu protrusion optimization</strong> × Cost / yield — No verified evidence is linked to this constraint.</li><li><strong>ECS-TTL embedded cooling</strong> × Stack / interconnect integration — No verified evidence is linked to this constraint.</li><li><strong>ECS-TTL embedded cooling</strong> × Thermo-mechanical reliability — No verified evidence is linked to this constraint.</li><li><strong>ECS-TTL embedded cooling</strong> × Manufacturability — No verified evidence is linked to this constraint.</li><li><strong>ECS-TTL embedded cooling</strong> × Cost / yield — No verified evidence is linked to this constraint.</li><li><strong>hybrid bonding</strong> × Electrical / signal integrity — No verified evidence is linked to this constraint.</li><li><strong>plugged sidewall</strong> × Stack / interconnect integration — No verified evidence is linked to this constraint.</li><li><strong>plugged sidewall</strong> × Manufacturability — No verified evidence is linked to this constraint.</li><li><strong>plugged sidewall</strong> × Electrical / signal integrity — No verified evidence is linked to this constraint.</li><li><strong>plugged sidewall</strong> × Cost / yield — No verified evidence is linked to this constraint.</li></ul></section>
+<section><h2>Approach × Constraint Matrix</h2><p class="muted">+ benefit · − downside · ± trade-off · • 관련 근거 · ? 근거 부족</p><table><thead><tr><th>Approach</th><th>C1 Thermal performance</th><th>C2 Stack / interconnect integration</th><th>C3 Thermo-mechanical reliability</th><th>C4 Manufacturability</th><th>C5 Electrical / signal integrity</th><th>C6 Cost / yield</th></tr></thead><tbody><tr><td>Cu protrusion optimization</td><td>?</td><td>?</td><td>• (R03)</td><td>• (R03)</td><td>?</td><td>?</td></tr><tr><td>ECS-TTL embedded cooling</td><td>+ (R05)</td><td>± (R05)</td><td>± (R05)</td><td>?</td><td>+ (R05)</td><td>?</td></tr><tr><td>hybrid bonding</td><td>± (R01,R02)</td><td>± (R01,R02,R04)</td><td>± (R01,R02,R03,R04)</td><td>± (R02,R04)</td><td>?</td><td>± (R02)</td></tr><tr><td>interface/material optimization</td><td>?</td><td>+ (R04)</td><td>+ (R04)</td><td>+ (R04)</td><td>+ (R04)</td><td>?</td></tr></tbody></table></section>
+<section><h2>Key Unknowns</h2><ul><li><strong>Cu protrusion optimization</strong> × Thermal performance — No verified evidence is linked to this constraint.</li><li><strong>Cu protrusion optimization</strong> × Stack / interconnect integration — No verified evidence is linked to this constraint.</li><li><strong>Cu protrusion optimization</strong> × Electrical / signal integrity — No verified evidence is linked to this constraint.</li><li><strong>Cu protrusion optimization</strong> × Cost / yield — No verified evidence is linked to this constraint.</li><li><strong>ECS-TTL embedded cooling</strong> × Manufacturability — No verified evidence is linked to this constraint.</li><li><strong>ECS-TTL embedded cooling</strong> × Cost / yield — No verified evidence is linked to this constraint.</li><li><strong>hybrid bonding</strong> × Electrical / signal integrity — No verified evidence is linked to this constraint.</li><li><strong>interface/material optimization</strong> × Thermal performance — No verified evidence is linked to this constraint.</li><li><strong>interface/material optimization</strong> × Cost / yield — No verified evidence is linked to this constraint.</li></ul></section>
 <section><h2>Candidate Hypotheses & Next Validation</h2><article class="card">
         <h3>H01</h3>
-        <p>ECS-TTL embedded cooling shows verified evidence of benefit for Thermal performance, Electrical / signal integrity, but its suitability for this case remains unverified for Stack / interconnect integration, Thermo-mechanical reliability, Manufacturability.</p>
-        <p><strong>Basis:</strong> E-R04-01, E-R04-02</p>
-        <p><strong>Next validation:</strong> Collect direct evidence or design a simulation/experiment that evaluates ECS-TTL embedded cooling against Stack / interconnect integration, Thermo-mechanical reliability, Manufacturability under the target HBM conditions.</p>
+        <p>ECS-TTL embedded cooling shows verified evidence of benefit for Thermal performance, Electrical / signal integrity, but its suitability for this case remains unverified for Manufacturability, Cost / yield.</p>
+        <p><strong>Basis:</strong> E-R05-01</p>
+        <p><strong>Next validation:</strong> Collect direct evidence or design a simulation/experiment that evaluates ECS-TTL embedded cooling against Manufacturability, Cost / yield under the target HBM conditions.</p>
         </article><article class="card">
         <h3>H02</h3>
-        <p>plugged sidewall shows verified evidence of benefit for Thermal performance, Thermo-mechanical reliability, but its suitability for this case remains unverified for Stack / interconnect integration, Manufacturability, Electrical / signal integrity.</p>
-        <p><strong>Basis:</strong> E-R05-01, E-R05-02</p>
-        <p><strong>Next validation:</strong> Collect direct evidence or design a simulation/experiment that evaluates plugged sidewall against Stack / interconnect integration, Manufacturability, Electrical / signal integrity under the target HBM conditions.</p>
+        <p>interface/material optimization shows verified evidence of benefit for Stack / interconnect integration, Thermo-mechanical reliability, but its suitability for this case remains unverified for Thermal performance, Cost / yield.</p>
+        <p><strong>Basis:</strong> E-R04-02</p>
+        <p><strong>Next validation:</strong> Collect direct evidence or design a simulation/experiment that evaluates interface/material optimization against Thermal performance, Cost / yield under the target HBM conditions.</p>
         </article></section>
 <section><h2>Evidence Papers</h2><details>
         <summary>Thermal Issues Related to Hybrid Bonding of 3D-Stacked High Bandwidth Memory: A Comprehensive Review</summary>
-        <p>Review of 3D-stacked HBM thermal issues. It describes increasing heat accumulation and thermo-mechanical stress with higher stack counts, compares external cooling and hybrid-bonding approaches, and emphasizes joint thermal, mechanical, and electrical optimization. It reports substantial thermal-resistance reductions in cited hybrid-bonding studies while noting reliability trade-offs.</p>
+        <p>Review of thermal issues in 3D-stacked HBM. It treats heat accumulation and thermo-mechanical stress as coupled problems, compares conventional thermal approaches with hybrid bonding, and reports that hybrid-bonding design parameters can improve vertical heat transfer while introducing mechanical/reliability design constraints.</p>
         <p><strong>DOI:</strong> 10.3390/electronics14132682 · <strong>Year:</strong> 2025</p>
         <p><strong>Source:</strong> Electronics</p>
         </details><details>
         <summary>C2W Hybrid Bonding Interconnect Technology for Higher Density and Better Thermal Dissipation of High Bandwidth Memory</summary>
-        <p>SK hynix reports chip-to-wafer Cu/oxide hybrid bonding on multi-stack HBM real devices. The paper reports thermal resistance below 20% of conventional HBM and more than 15% stack-height reduction, while also identifying particle-induced voids, pre-bond process control, electrical failure risk, reliability, and cumulative-yield concerns.</p>
+        <p>C2W hybrid bonding was demonstrated on multi-stack HBM devices. The study reports strong thermal-resistance and stack-height advantages versus conventional HBM, while also describing particle/void control and process integration as reliability and yield concerns.</p>
         <p><strong>DOI:</strong> 10.1109/ECTC51909.2023.00179 · <strong>Year:</strong> 2023</p>
         <p><strong>Source:</strong> 2023 IEEE ECTC</p>
         </details><details>
         <summary>Optimization of Cu protrusion of wafer-to-wafer hybrid bonding for HBM packages application</summary>
-        <p>This study examines Cu protrusion and reliability in wafer-to-wafer hybrid-bonded HBM. It links CTE mismatch to thermal stress and potential device failure, shows that manufacturing and service conditions affect TSV deformation, and evaluates dielectric/process choices and debonding risk using modeling and experiments.</p>
+        <p>Study of Cu protrusion in wafer-to-wafer hybrid bonding for HBM. It links CTE-mismatch-induced thermal stress and manufacturing/service conditions to TSV deformation and reliability, and proposes process optimization around surface topology.</p>
         <p><strong>DOI:</strong> 10.1016/j.mssp.2022.107063 · <strong>Year:</strong> 2022</p>
         <p><strong>Source:</strong> Materials Science in Semiconductor Processing</p>
         </details><details>
+        <summary>3D Integrated Process and Hybrid Bonding of High Bandwidth Memory (HBM)</summary>
+        <p>Review of HBM 3D integration and hybrid bonding. It compares W2W, D2W, and D2D bonding, discusses advantages and limitations, and covers dielectric, surface/interface, and metal-structure improvements intended to improve bonding performance and reliability.</p>
+        <p><strong>DOI:</strong> 10.1007/s13391-025-00557-9 · <strong>Year:</strong> 2025</p>
+        <p><strong>Source:</strong> </p>
+        </details><details>
         <summary>Thermal and Signal Integrity Co-Design and Verification of Embedded Cooling Structure With Thermal Transmission Line for High Bandwidth Memory Module</summary>
-        <p>The paper proposes an embedded cooling structure plus a thermal transmission line for an HBM module. Thermal and electromagnetic simulations show lower and more uniform temperatures together with improved evaluated eye-diagram and skew behavior. The design explicitly considers structural reliability and package dimensions.</p>
+        <p>Embedded Cooling Structure with Thermal Transmission Line is evaluated for HBM using thermal and electromagnetic simulations. The approach targets lower and more uniform temperature while explicitly checking signal integrity and structural reliability rather than treating cooling in isolation.</p>
         <p><strong>DOI:</strong> 10.1109/TCPMT.2022.3201673 · <strong>Year:</strong> 2022</p>
         <p><strong>Source:</strong> IEEE Transactions on Components, Packaging and Manufacturing Technology</p>
-        </details><details>
-        <summary>Heat Dissipation Improvement Using Plugged Sidewall for Three-dimensional (3D) Package of High-stacked High Bandwidth Memory (HBM)</summary>
-        <p>A plugged-sidewall copper structure is proposed around a high-stacked HBM package to create an additional heat-flow path. FEA across 4-, 8-, 12-, and 16-die stacks reports more than 13% lower maximum package temperature and more than 32% lower average logic-die corner thermal stress versus conventional structures. Manufacturing feasibility and cost are not established by the reported simulation.</p>
-        <p><strong>DOI:</strong> 10.5573/JSTS.2026.26.2.97 · <strong>Year:</strong> 2026</p>
-        <p><strong>Source:</strong> Journal of Semiconductor Technology and Science</p>
         </details></section>
 
 <section>
@@ -78,6 +78,42 @@ details { padding: 12px 0; border-bottom:1px solid #e6e9ed; } summary { cursor:p
 <tbody><tr><td>Single keyword</td><td>28.6%</td><td>28.6%</td><td>+0.0%p</td></tr><tr><td>Multi-query + RRF</td><td>28.6%</td><td>71.4%</td><td>+42.9%p</td></tr><tr><td>Semantic</td><td>14.3%</td><td>14.3%</td><td>+0.0%p</td></tr><tr><td>Hybrid + RRF</td><td>42.9%</td><td>71.4%</td><td>+28.6%p</td></tr></tbody>
 </table>
 <p class="muted">Golden Corpus v1 7편을 고정하고 Query/Ranking 전략만 변경했습니다. 7/7 논문이 OpenAlex에 색인되었습니다. 이 소규모 HBM Thermal benchmark에서는 Multi-query + RRF가 Recall@20 28.6% → 71.4%, Recall@50 42.9% → 85.7%로 개선되었습니다.</p>
+</section>
+
+
+<section>
+<h2>AI Output Evaluation · V1 → V2</h2>
+<table>
+<thead><tr><th>Metric</th><th>V1</th><th>V2</th><th>Delta</th></tr></thead>
+<tbody><tr><td>Citation validity</td><td>100.0%</td><td>100.0%</td><td>+0.0%p</td></tr><tr><td>Constraint precision</td><td>100.0%</td><td>100.0%</td><td>+0.0%p</td></tr><tr><td>Constraint recall</td><td>77.8%</td><td>94.4%</td><td>+16.7%p</td></tr><tr><td>Constraint F1</td><td>87.5%</td><td>97.1%</td><td>+9.6%p</td></tr><tr><td>Numeric precision</td><td>100.0%</td><td>100.0%</td><td>+0.0%p</td></tr><tr><td>Numeric recall</td><td>100.0%</td><td>100.0%</td><td>+0.0%p</td></tr><tr><td>Hypothesis traceability</td><td>100.0%</td><td>100.0%</td><td>+0.0%p</td></tr></tbody>
+</table>
+<p class="muted">Missed mapping 4 → 1 · Quality Gate FAIL → PASS</p>
+</section>
+
+
+<section>
+<h2>AI Output Evaluation</h2>
+<div class="metrics">
+<div class="metric"><strong>Citation validity</strong><span>100.0%</span></div>
+<div class="metric"><strong>Constraint precision</strong><span>100.0%</span></div>
+<div class="metric"><strong>Constraint recall</strong><span>94.7%</span></div>
+<div class="metric"><strong>Constraint F1</strong><span>97.3%</span></div>
+</div>
+<p><strong>Unsupported mapping:</strong> 0 · <strong>Missed mapping:</strong> 1 · <strong>Hypothesis traceability:</strong> 100.0%</p>
+<p><strong>Quality Gate:</strong> PASS</p>
+<p class="muted">Deterministic evaluator는 citation / constraint / numeric / hypothesis traceability를 검증합니다. 자유서술 전체의 의미적 정확성을 완전히 증명하는 평가는 아닙니다.</p>
+</section>
+
+
+<section>
+<h2>End-to-End Gate</h2>
+<div class="metrics">
+<div class="metric"><strong>Source Coverage</strong><span>7/7</span></div>
+<div class="metric"><strong>Retrieval Recall@20</strong><span>71.4%</span></div>
+<div class="metric"><strong>Evidence Accepted</strong><span>5/5</span></div>
+<div class="metric"><strong>Overall Gate</strong><span>PASS</span></div>
+</div>
+<p class="muted">Execution mode: browser-openalex + manual-chatgpt</p>
 </section>
 
 <section><h2>Interpretation Rule</h2><p>This demo does not identify a best technology or a proven root cause. It narrows the investigation space using verified evidence and preserves unresolved constraints for human review.</p></section>
