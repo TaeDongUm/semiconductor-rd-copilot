@@ -50,8 +50,8 @@ class CaseAndQueryTests(unittest.TestCase):
         plan = generate_query_plan(case)
 
         c7_queries = [q for q in plan.keyword_queries if q.constraint_id == "C7"]
-        self.assertEqual(len(c7_queries), 1)
-        self.assertIn("power consumption", c7_queries[0].query)
+        self.assertGreaterEqual(len(c7_queries), 1)
+        self.assertTrue(any("power consumption" in q.query for q in c7_queries))
 
     def test_semantic_query_uses_problem_statement(self):
         case = load_case(self.write_case(self.base_payload()))

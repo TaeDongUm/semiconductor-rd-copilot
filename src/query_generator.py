@@ -30,12 +30,12 @@ def _unique_queries(queries: list[SearchQuery]) -> tuple[SearchQuery, ...]:
     return tuple(unique)
 
 
-def generate_query_plan(case: EngineeringCase, max_keyword_queries: int = 10) -> QueryPlan:
-    """Build a bounded multi-query plan from the case definition.
+def generate_query_plan(case: EngineeringCase, max_keyword_queries: int = 12) -> QueryPlan:
+    """Build a bounded multi-query plan from a reviewable Engineering Case.
 
-    This stage is intentionally deterministic. In a later step an LLM may populate or
-    refine domain/problem/constraint search terms, but retrieval never depends on one
-    opaque generated query.
+    A decomposition model may propose vocabulary, but retrieval does not depend on one opaque
+    generated query. Each constraint contributes at least one focused query and, when room is
+    available, a vocabulary-expansion query using an alternative literature term.
     """
     if max_keyword_queries < 2:
         raise ValueError("max_keyword_queries must be at least 2")
@@ -43,27 +43,44 @@ def generate_query_plan(case: EngineeringCase, max_keyword_queries: int = 10) ->
     primary_domain = case.domain_terms[0]
     primary_problem = case.problem_terms[0]
     queries: list[SearchQuery] = [
-        SearchQuery("broad", f'"{primary_domain}" {primary_problem}'),
+        SearchQuery("broad", f'"{primary_domain}" "{primary_problem}"'),
     ]
 
     if len(case.domain_terms) > 1:
         queries.append(
-            SearchQuery("domain_alias", f'"{case.domain_terms[1]}" {primary_problem}')
+            SearchQuery("domain_alias", f'"{case.domain_terms[1]}" "{primary_problem}"')
         )
 
+    # First pass: every constraint must be represented.
     for constraint in case.constraints:
-        # Every added constraint automatically contributes one focused query.
         focus = constraint.search_terms[0]
         queries.append(
             SearchQuery(
                 "constraint",
-                f'"{primary_domain}" {primary_problem} "{focus}"',
+                f'"{primary_domain}" "{primary_problem}" "{focus}"',
                 constraint.id,
             )
         )
 
-    # One vocabulary-expansion query helps catch papers using alternative domain/problem terms.
-    if len(case.domain_terms) > 2 and len(case.problem_terms) > 1:
+    # Second pass: use alternative literature vocabulary when the query budget allows it.
+    for constraint in case.constraints:
+        if len(queries) >= max_keyword_queries:
+            break
+        if len(constraint.search_terms) < 2:
+            continue
+        alias = constraint.search_terms[1]
+        domain = case.domain_terms[1] if len(case.domain_terms) > 1 else primary_domain
+        problem = case.problem_terms[1] if len(case.problem_terms) > 1 else primary_problem
+        queries.append(
+            SearchQuery(
+                "constraint_alias",
+                f'"{domain}" "{problem}" "{alias}"',
+                constraint.id,
+            )
+        )
+
+    # One broad vocabulary-expansion query catches terminology drift across subfields.
+    if len(queries) < max_keyword_queries and len(case.domain_terms) > 2 and len(case.problem_terms) > 1:
         queries.append(
             SearchQuery(
                 "vocabulary_expansion",
