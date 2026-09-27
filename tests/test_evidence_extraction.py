@@ -95,3 +95,14 @@ class VerifiedSeedTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+def test_prompt_requires_constraint_coverage_check():
+    from src.evidence_extraction import build_evidence_prompt
+    prompt = build_evidence_prompt(
+        case={"case_id":"T","problem_statement":"x","constraints":[{"id":"C1","name":"Thermal"}]},
+        paper={"paper_id":"P1","title":"t","doi":"10.test/a"},
+        source_text="thermal evidence",
+    )
+    assert "CONSTRAINT COVERAGE CHECK" in prompt
+    assert "unsupported constraints must remain omitted/unknown" in prompt

@@ -1,0 +1,21 @@
+{
+  "benchmark_id": "HBM-THERMAL-OUTPUT-V1",
+  "status": "completed",
+  "evaluated_at": "2026-09-27",
+  "golden_source": "data/evidence/hbm_thermal_verified_seed.jsonl",
+  "actual_output": "runs/hbm_thermal_live_demo_2026-09-27/06_evidence.jsonl",
+  "decision_output": "runs/hbm_thermal_live_demo_2026-09-27/07_decision.json",
+  "scope": "retrieved-paper-conditional output quality",
+  "quality_gate": {
+    "citation_validity": 1.0,
+    "constraint_precision_min": 0.95,
+    "constraint_recall_min": 0.8,
+    "numeric_precision": 1.0,
+    "numeric_recall": 1.0,
+    "hypothesis_traceability": 1.0
+  },
+  "result_file": "evals/output/history/hbm_thermal_output_v1_2026-09-27.json",
+  "report_file": "reports/output_evaluation_v1.md",
+  "result": "FAIL",
+  "failure_summary": "Constraint mapping recall 77.8% (14/18); four source-supported constraint mappings were omitted while unsupported mappings remained zero."
+}

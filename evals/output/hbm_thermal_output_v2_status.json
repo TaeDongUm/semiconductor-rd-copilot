@@ -1,0 +1,8 @@
+{
+  "benchmark_id": "HBM-THERMAL-OUTPUT-V2",
+  "status": "awaiting_rerun",
+  "change": "Evidence extraction prompt now includes an explicit Constraint Coverage Check before JSON output.",
+  "anti_overfit_rule": "The prompt must not force missing constraints to be filled; unsupported constraints remain omitted/unknown.",
+  "comparison_target": "HBM-THERMAL-OUTPUT-V1",
+  "next_step": "Regenerate evidence for the same retrieved papers with the revised prompt, finalize the decision output, then rerun src.output_evaluation against the same Golden Evidence."
+}

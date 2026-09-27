@@ -125,7 +125,9 @@ RULES
 6. Distinguish findings from limitations/trade-offs. Use 'unknown' when the source cannot answer an important point.
 7. Hypotheses are NOT requested here. This step only extracts evidence.
 8. Keep claims concise and paraphrased. Do not copy long source passages.
-9. Return JSON only, matching the schema exactly.
+9. CONSTRAINT COVERAGE CHECK: before returning, review every case constraint once. If the supplied source explicitly supports a constraint that is relevant to an extracted approach, include that constraint_id. Do not add a constraint merely to improve coverage; unsupported constraints must remain omitted/unknown.
+10. If one source statement explicitly supports multiple constraints, preserve all supported constraint_ids even when you split the statement into multiple evidence records.
+11. Return JSON only, matching the schema exactly.
 
 CASE
 case_id: {case.get('case_id', '')}
