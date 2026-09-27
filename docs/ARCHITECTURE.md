@@ -1,95 +1,59 @@
 # Architecture
 
-## Current MVP Flow
+상세한 사용자 흐름은 [`PROJECT_FLOW.md`](PROJECT_FLOW.md)를 참고합니다.
+
+## Current Flow
 
 ```text
-HBM Thermal Problem
-        ↓
-Fixed Search Queries
-        ↓
-OpenAlex Retrieval
-        ↓
-Paper Metadata / Abstract
-        ↓
-Human-reviewed Golden Corpus candidates
-        ↓
-(Mock) Evidence / Claim
-        ↓
-Deterministic Evaluator
-        ↓
-PASS / FAIL
-```
-
-현재 단계에서는 Retrieval과 Evaluation을 우선 분리해 검증합니다. LLM은 아직 연결하지 않았습니다.
-
-## Target MVP Flow
-
-```text
-User Problem
-    ↓
-Problem Decomposition (LLM)
-    ↓
-Search Query Generation
-    ↓
-OpenAlex Retrieval
-    ↓
-Evidence Extraction (LLM)
-    ↓
-Approach × Constraint Matrix
-    ↓
-Unknown / Conflict
-    ↓
-Candidate Hypothesis / Next Validation
-    ↓
-Deterministic Evaluation Harness
-    ↓
-Investigation Brief
-```
-
-## Retrieval Layer
-
-`src/openalex.py`는 표준 라이브러리만 사용하여 OpenAlex Works API를 호출합니다.
-
-- keyword search와 semantic search 지원
-- abstract가 있는 논문만 조회 가능
-- 기본값은 Open Access 논문만 조회
-- DOI/OpenAlex ID 기반 중복 제거
-- 여러 query에서 반복 등장한 논문을 우선 정렬
-- OpenAlex inverted abstract를 일반 문자열로 복원
-
-`src/retrieve_hbm.py`는 `data/hbm_thermal_queries.json`의 검색어를 사용해 HBM Thermal 후보 논문을 JSONL로 저장합니다.
-
-## Golden Corpus Policy
-
-검색 결과를 곧바로 Golden Corpus로 사용하지 않습니다.
-
-```text
-OpenAlex Result
-      ↓
-Candidate
-      ↓
-Human Review
-  ┌───┴────────────┐
-accepted         rejected / needs_full_text
+Case JSON
   ↓
-Golden Corpus
+Deterministic Multi-query Generator
+  ├─ Keyword Queries
+  └─ Semantic Problem Query
+  ↓
+OpenAlex
+  ↓
+Merge / Deduplicate / Rank
+  ↓
+(Optional) Golden Corpus Recall@K
 ```
 
-현재 `data/hbm_thermal_golden_candidates.jsonl`의 10편은 모두 `candidate` 상태입니다.
+현재 단계에서는 LLM을 연결하기 전에 **검색 구조와 평가 구조를 분리해 검증**합니다.
 
-## Why Retrieval Is Kept Deterministic First
+## Case Definition
 
-처음부터 LLM을 검색/선정 전 과정에 넣으면 어떤 단계에서 오류가 생겼는지 분리하기 어렵습니다.
+`data/cases/*.json`이 실행 입력입니다.
 
-따라서 MVP는 다음 순서로 확장합니다.
+- `problem_statement`
+- `domain_terms`
+- `problem_terms`
+- `constraints[]`
+  - `id`
+  - `name`
+  - `search_terms`
 
-1. 고정 query로 Retrieval 품질 확인
-2. Golden Corpus와 검색 결과 비교
-3. 이후 LLM query decomposition 추가
-4. 동일 Eval Set으로 before/after 비교
+HBM Thermal은 첫 번째 Benchmark Case이며 시스템 하드코딩이 아닙니다.
 
-## External Dependency
+## Query Strategy
 
-현재 OpenAlex client는 Python 표준 라이브러리만 사용합니다.
+단일 검색어 대신 다음을 함께 사용합니다.
 
-실제 OpenAlex 호출에는 인터넷 연결이 필요하지만 API key는 선택 사항입니다. `OPENALEX_API_KEY` 환경변수가 있으면 자동으로 사용합니다.
+1. Broad keyword query
+2. Domain alias query
+3. Constraint별 focused query
+4. Vocabulary expansion query
+5. Problem statement semantic query
+
+새 Constraint를 Case JSON에 추가하면 해당 Constraint의 focused query가 자동 생성됩니다.
+
+향후 LLM은 `domain_terms`, `problem_terms`, `constraints`, `search_terms`를 자동 생성/보완하는 데 사용하며, 최종 Query Plan은 저장하여 사람이 확인 가능하게 합니다.
+
+## Golden Corpus
+
+Golden Corpus는 Retrieval을 위한 고정 DB가 아니라 Recall@K를 측정하는 버전 고정 Benchmark입니다.
+
+현재 후보:
+
+`evals/golden/hbm_thermal/v1/candidates.jsonl`
+
+현재 모두 사람 검토 전이므로 Retrieval 실행 시 Recall은 `N/A`가 정상입니다.

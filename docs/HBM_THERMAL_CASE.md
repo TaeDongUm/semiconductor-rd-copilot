@@ -1,8 +1,10 @@
-# HBM Thermal Management MVP Case
+# HBM Thermal Management Benchmark Case
 
 ## 1. Case Goal
 
-본 MVP는 HBM 적층 증가로 인해 커지는 열 문제를 하나의 정답 기술로 해결하려는 프로젝트가 아닙니다.
+이 문서는 범용 시스템의 첫 번째 Benchmark Case를 정의합니다. HBM Thermal은 시스템에 하드코딩된 문제가 아니며, 다른 공학 문제도 동일한 Case 구조로 추가할 수 있습니다.
+
+본 Case는 HBM 적층 증가로 인해 커지는 열 문제를 하나의 정답 기술로 해결하려는 프로젝트가 아닙니다.
 
 공개 연구 근거를 이용하여 다음 의사결정 흐름을 구조화하는 것이 목표입니다.
 

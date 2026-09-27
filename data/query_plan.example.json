@@ -1,0 +1,50 @@
+{
+  "keyword_queries": [
+    {
+      "strategy": "broad",
+      "constraint_id": null,
+      "query": "\"high bandwidth memory\" thermal management"
+    },
+    {
+      "strategy": "domain_alias",
+      "constraint_id": null,
+      "query": "\"HBM\" thermal management"
+    },
+    {
+      "strategy": "constraint",
+      "constraint_id": "C1",
+      "query": "\"high bandwidth memory\" thermal management \"thermal resistance\""
+    },
+    {
+      "strategy": "constraint",
+      "constraint_id": "C2",
+      "query": "\"high bandwidth memory\" thermal management \"hybrid bonding\""
+    },
+    {
+      "strategy": "constraint",
+      "constraint_id": "C3",
+      "query": "\"high bandwidth memory\" thermal management \"thermo-mechanical reliability\""
+    },
+    {
+      "strategy": "constraint",
+      "constraint_id": "C4",
+      "query": "\"high bandwidth memory\" thermal management \"manufacturability\""
+    },
+    {
+      "strategy": "constraint",
+      "constraint_id": "C5",
+      "query": "\"high bandwidth memory\" thermal management \"signal integrity\""
+    },
+    {
+      "strategy": "constraint",
+      "constraint_id": "C6",
+      "query": "\"high bandwidth memory\" thermal management \"yield\""
+    },
+    {
+      "strategy": "vocabulary_expansion",
+      "constraint_id": null,
+      "query": "\"3D stacked DRAM\" \"thermal resistance\""
+    }
+  ],
+  "semantic_query": "Investigate thermal-management approaches for increasingly stacked high bandwidth memory, focusing on heat accumulation and thermal resistance while considering thermo-mechanical reliability, manufacturability, signal integrity, cost, and yield trade-offs."
+}

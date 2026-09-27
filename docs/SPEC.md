@@ -1,27 +1,42 @@
 # MVP Specification
 
-## 1. Problem Statement
+## Problem
 
-반도체 R&D에서는 하나의 기술적 문제를 해결하기 위해 여러 논문과 기술 접근을 조사하고, 각 접근이 성능·신뢰성·제조성·비용 등의 제약조건에 어떤 영향을 주는지 비교해야 합니다.
+공개 반도체 R&D 자료를 조사할 때 검색어 선택에 따라 발견되는 논문의 질이 크게 달라지고, 이후 AI 분석은 Retrieval 품질에 의존합니다.
 
-공개 정보만 사용할 수 있는 개인 개발 환경에서는 실제 Fab 장비나 기업 내부 데이터를 활용할 수 없습니다. 따라서 본 MVP는 공개 연구 근거를 이용해 **기술 조사 및 의사결정 공간을 구조화하는 과정**을 지원합니다.
+본 프로젝트는 다음 흐름을 지원합니다.
 
-## 2. MVP Case
+`Engineering Problem → Constraints → Multi-query Retrieval → Evidence → Trade-off / Unknown → Hypothesis → Validation`
 
-HBM 적층 증가에 따른 Thermal Management 문제를 대표 사례로 사용합니다.
+## Input
 
-예시 입력:
+사용자는 특정 반도체 기술 문제를 입력합니다. HBM Thermal은 첫 Benchmark Case일 뿐 시스템의 고정 도메인이 아닙니다.
 
-> HBM의 적층 수가 증가하면서 package 내부 heat accumulation과 thermal resistance가 증가한다. 성능을 유지하면서 reliability, manufacturability, cost를 함께 고려할 수 있는 thermal management 접근을 조사하고 싶다.
+현재 Case 입력은 JSON으로 표현합니다.
 
-## 3. Expected Output
+- Problem statement
+- Domain terms
+- Problem terms
+- Engineering constraints
+- Constraint별 search terms
 
-최종 결과는 하나의 '정답 기술'이 아니라 다음 항목을 포함한 Investigation Brief입니다.
+향후 LLM이 자연어 입력을 이 구조로 자동 변환합니다.
+
+## Retrieval Principle
+
+하나의 AI-generated query에 의존하지 않습니다.
+
+- Keyword multi-query
+- Semantic query
+- Query 결과 merge / deduplication
+- Golden Corpus가 존재하는 Case에서는 Recall@K 평가
+
+## Expected Output
 
 - Problem Map
 - Engineering Constraints
-- Relevant Evidence
-- Existing Approaches
+- Retrieved Papers
+- Evidence Units
 - Approach × Constraint Matrix
 - Conflicting Evidence
 - Unknowns
@@ -29,62 +44,31 @@ HBM 적층 증가에 따른 Thermal Management 문제를 대표 사례로 사용
 - Next Validation
 - Evaluation Result
 
-## 4. AI Responsibilities
+## Roles
 
-AI가 맡을 수 있는 작업:
-
+### AI
 - 자연어 문제 구조화
-- 검색 query 생성
-- 논문/초록에서 구조화된 Evidence 추출
-- 접근법 간 관계 및 trade-off 정리
-- 근거 기반 Candidate Hypothesis 생성
-- 최종 자연어 Brief 작성
+- 검색 용어/동의어 보완
+- Evidence 추출
+- Trade-off 정리
+- Hypothesis 생성
 
-## 5. Code Responsibilities
+### Code
+- Query Plan 생성/저장
+- OpenAlex 호출
+- 결과 통합/중복 제거
+- Golden Recall@K
+- Citation / Numeric / Schema / Unsupported Claim 평가
 
-코드가 우선 담당할 작업:
+### Human
+- 문제/Constraint 검토
+- Golden Corpus 검토
+- 기술적 타당성 최종 판단
 
-- JSON Schema/필수 필드 검증
-- Paper ID / DOI / Citation 존재 여부 확인
-- Numeric claim과 evidence 숫자 일치 확인
-- Evidence 없는 Claim 탐지
-- 허용된 Claim type 확인
-- Eval case 자동 판정
+## Guardrails
 
-## 6. Human Responsibilities
-
-사람이 최종적으로 담당할 작업:
-
-- 기술 문제 정의가 적절한지 판단
-- Golden Corpus와 핵심 Evidence 검토
-- 상충 근거의 의미 해석
-- Hypothesis의 실제 기술적 타당성 검토
-- 최종 의사결정
-
-## 7. Guardrails
-
-다음 행위는 금지합니다.
-
-- Evidence가 없는 효과를 사실처럼 표현
-- 논문에 없는 수치 생성
-- Hypothesis를 검증된 결과처럼 표현
-- 상충 Evidence를 숨기거나 임의로 통합
-- 실제 공정 데이터 없이 physical root cause 확정
-- 실제 실험 없이 성능/수율 개선을 달성했다고 주장
-
-## 8. Initial Evaluation Criteria
-
-초기 MVP는 다음 항목을 자동 평가합니다.
-
-- `schema_pass`
-- `citation_validity`
-- `unsupported_claim_count`
-- `hypothesis_labeling`
-- `unknown_preservation`
-- `conflict_preservation`
-
-## 9. MVP Done Criteria
-
-HBM Thermal 문제 1개에 대해 다음 흐름이 끊기지 않고 동작하면 MVP로 간주합니다.
-
-`Input → Structured Problem → Evidence → Matrix → Unknown/Conflict → Hypothesis → Evaluation → Brief`
+- Evidence 없는 효과를 사실처럼 표현하지 않음
+- 논문에 없는 숫자를 생성하지 않음
+- Unknown/Conflict를 숨기지 않음
+- Hypothesis를 검증 결과처럼 표현하지 않음
+- 실제 Fab/실험 데이터 없이 root cause 또는 성능 개선을 확정하지 않음

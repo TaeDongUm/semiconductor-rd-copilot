@@ -1,0 +1,77 @@
+{
+  "case_id": "HBM-THERMAL-001",
+  "title": "HBM Thermal Management",
+  "problem_statement": "HBM 적층 수 증가로 내부 열 축적과 thermal resistance가 커질 때 reliability, manufacturability, signal integrity, cost/yield를 함께 고려하여 조사 우선순위를 구조화한다.",
+  "domain_terms": [
+    "high bandwidth memory",
+    "HBM",
+    "3D stacked DRAM"
+  ],
+  "problem_terms": [
+    "thermal management",
+    "thermal resistance",
+    "heat accumulation",
+    "hotspot"
+  ],
+  "constraints": [
+    {
+      "id": "C1",
+      "name": "Thermal performance",
+      "search_terms": [
+        "thermal resistance",
+        "junction temperature",
+        "hotspot",
+        "heat dissipation"
+      ]
+    },
+    {
+      "id": "C2",
+      "name": "Stack / interconnect integration",
+      "search_terms": [
+        "hybrid bonding",
+        "interconnect",
+        "stack height",
+        "TSV"
+      ]
+    },
+    {
+      "id": "C3",
+      "name": "Thermo-mechanical reliability",
+      "search_terms": [
+        "thermo-mechanical reliability",
+        "CTE mismatch",
+        "warpage",
+        "delamination"
+      ]
+    },
+    {
+      "id": "C4",
+      "name": "Manufacturability",
+      "search_terms": [
+        "manufacturability",
+        "process integration",
+        "fabrication",
+        "bonding process"
+      ]
+    },
+    {
+      "id": "C5",
+      "name": "Electrical / signal integrity",
+      "search_terms": [
+        "signal integrity",
+        "electrical performance",
+        "power integrity"
+      ]
+    },
+    {
+      "id": "C6",
+      "name": "Cost / yield",
+      "search_terms": [
+        "yield",
+        "cost",
+        "process yield"
+      ]
+    }
+  ],
+  "semantic_query": "Investigate thermal-management approaches for increasingly stacked high bandwidth memory, focusing on heat accumulation and thermal resistance while considering thermo-mechanical reliability, manufacturability, signal integrity, cost, and yield trade-offs."
+}

@@ -1,23 +1,36 @@
-# Golden Corpus Review Guide
+# Golden Corpus Guide
 
-`data/hbm_thermal_golden_candidates.jsonl`은 최종 정답 데이터가 아니라 사람이 검토할 후보 목록입니다.
+## 역할
 
-## Review Procedure
+```mermaid
+flowchart LR
+    A[OpenAlex 최신 전체 검색] --> B[실제 서비스 Retrieval]
+    C[사람이 검증한 Golden Corpus] --> D[검색 품질 평가]
+    B --> D
+    D --> E[Recall@K]
+```
 
-각 후보에 대해 다음 네 가지만 확인합니다.
+Golden Corpus는 검색 범위를 제한하는 지식 DB가 아니라 **고정된 평가 Benchmark**입니다.
 
-1. **Relevant**: HBM thermal-management 의사결정에 직접 또는 보조적으로 관련 있는가?
-2. **Usable Evidence**: abstract 또는 접근 가능한 full text에서 실제 claim을 확인할 수 있는가?
-3. **Constraint**: C1~C6 중 어떤 항목에 근거를 제공하는가?
-4. **Caution**: 특정 package/process 조건에서만 성립하는 결과를 일반화하고 있지 않은가?
+## 버전 관리
 
-## Review Result
+```mermaid
+flowchart LR
+    A[후보 논문] --> B[Human Review]
+    B -->|accepted| C[Golden v1 고정]
+    B -->|rejected| D[제외]
+    E[새 논문] --> F[새 Candidate Pool]
+    F --> G[Human Review]
+    G --> H[Golden v2]
+```
 
-후보 JSON의 `review_status`를 다음 중 하나로 변경합니다.
+현재 `evals/golden/hbm_thermal/v1/candidates.jsonl`은 아직 Golden이 아니라 **사람 검토가 필요한 후보 10편**입니다.
 
-- `accepted`: Golden Corpus에 사용
-- `rejected`: 관련성이 낮거나 근거 확인 불가
-- `abstract_only`: 관련성은 있으나 현재 abstract 수준에서만 확인
-- `needs_full_text`: 핵심 claim 검증에 full text 확인 필요
+검토 시 각 후보에서 다음만 확인합니다.
 
-MVP에서는 10개 후보를 모두 채택할 필요가 없습니다. **근거를 직접 설명할 수 있는 6~8편**만 남겨도 충분합니다.
+1. 문제와 직접/보조적으로 관련 있는가?
+2. 실제 claim을 abstract/full text에서 확인 가능한가?
+3. 어떤 Constraint에 근거를 제공하는가?
+4. 특정 조건의 결과를 과도하게 일반화하지 않는가?
+
+`review_status`는 `accepted`, `rejected`, `abstract_only`, `needs_full_text` 중 하나로 관리합니다.
