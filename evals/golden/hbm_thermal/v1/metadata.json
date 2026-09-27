@@ -2,8 +2,22 @@
   "benchmark_id": "HBM-THERMAL-GOLDEN-V1",
   "case_id": "HBM-THERMAL-001",
   "cutoff_date": "2026-09-27",
-  "status": "draft_human_review_required",
+  "status": "accepted_v1",
   "purpose": "검색 전략의 Recall@K를 비교하기 위한 고정 평가 기준 후보",
   "policy": "v1은 확정 후 수정하지 않는다. 이후 새 논문은 candidate pool에 넣고 다음 버전에서 검토한다.",
-  "accepted_statuses": ["accepted"]
+  "accepted_statuses": [
+    "accepted"
+  ],
+  "accepted_count": 7,
+  "accepted_paper_ids": [
+    "P01",
+    "P02",
+    "P03",
+    "P04",
+    "P05",
+    "P06",
+    "P09"
+  ],
+  "review_method": "assistant web verification using publisher/official/institutional abstracts and DOI records; final domain-owner review recommended",
+  "scope_note": "Golden v1 targets HBM package thermal-management investigation; peripheral or redundant papers remain in candidates.jsonl."
 }
