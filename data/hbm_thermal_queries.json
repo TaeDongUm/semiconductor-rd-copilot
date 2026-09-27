@@ -1,0 +1,11 @@
+{
+  "case_id": "HBM-THERMAL-001",
+  "problem_statement": "HBM 적층 증가에 따른 내부 열 축적과 thermal resistance 문제를 reliability, manufacturability, signal integrity, cost/yield trade-off와 함께 조사한다.",
+  "queries": [
+    "high bandwidth memory thermal management",
+    "HBM hybrid bonding thermal reliability",
+    "HBM embedded cooling thermal integrity",
+    "3D stacked DRAM thermal management TSV",
+    "HBM package thermal reliability"
+  ]
+}
