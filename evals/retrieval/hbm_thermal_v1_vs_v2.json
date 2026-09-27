@@ -1,0 +1,52 @@
+{
+  "case_id": "HBM-THERMAL-001",
+  "golden_version": "HBM-THERMAL-GOLDEN-V1",
+  "baseline_file": "evals/retrieval/history/hbm_thermal_v1_user_run_2026-09-27.json",
+  "v2_output_file": "evals/retrieval/history/hbm_thermal_v2_user_run_2026-09-27.json",
+  "status": "completed",
+  "comparison_policy": "Same fixed Golden v1. Overall Recall is reported because all 7 Golden papers were indexed in OpenAlex.",
+  "source_coverage": {
+    "indexed": 7,
+    "golden": 7,
+    "with_abstract": 5
+  },
+  "v2_changes": [
+    "OpenAlex DOI source-coverage diagnostics",
+    "concept-family Boolean queries instead of exact-phrase-heavy queries",
+    "20 results per keyword query before fusion",
+    "reciprocal-rank fusion across independent keyword rankings",
+    "reciprocal-rank fusion across keyword + semantic rankings"
+  ],
+  "recall_at_20": {
+    "single_keyword": {
+      "v1": 0.2857142857142857,
+      "v2": 0.2857142857142857,
+      "delta_pp": 0.0
+    },
+    "multi_query": {
+      "v1": 0.2857142857142857,
+      "v2": 0.7142857142857143,
+      "delta_pp": 42.85714285714286
+    },
+    "semantic": {
+      "v1": 0.14285714285714285,
+      "v2": 0.14285714285714285,
+      "delta_pp": 0.0
+    },
+    "hybrid": {
+      "v1": 0.42857142857142855,
+      "v2": 0.7142857142857143,
+      "delta_pp": 28.571428571428577
+    }
+  },
+  "best_observed_strategy": {
+    "name": "multi_query_rrf_v2",
+    "recall_at_20": 0.7142857142857143,
+    "recall_at_50": 0.8571428571428571,
+    "reason": "It tied hybrid at Recall@20 and retrieved 6/7 Golden papers at Recall@50, while hybrid remained at 5/7."
+  },
+  "limitations": [
+    "Golden Corpus contains only 7 manually reviewed papers; one paper changes recall by 14.3 percentage points.",
+    "Results apply to this HBM Thermal benchmark and should not be generalized to all scholarly search tasks."
+  ]
+}

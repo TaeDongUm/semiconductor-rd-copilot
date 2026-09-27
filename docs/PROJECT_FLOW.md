@@ -45,18 +45,18 @@ flowchart LR
 
 ```mermaid
 flowchart TD
-    A[Problem] --> B[여러 Keyword Query]
-    A --> C[Semantic Query]
-    B --> D[검색 결과]
-    C --> D
-    D --> E[Golden Corpus와 비교]
-    E --> F[Recall@K]
-    F -->|낮음| G[용어 / Query 수정]
-    G --> B
-    F -->|충분| H[Evidence 단계 진행]
+    A[V1 Recall@20 2/7] --> B[Source Coverage 진단]
+    B --> C[Golden 7/7 OpenAlex 색인]
+    C --> D[Query / Ranking 문제로 분리]
+    D --> E[Concept-family Multi-query]
+    E --> F[Reciprocal Rank Fusion]
+    F --> G[V2 Recall@20 5/7]
+    G --> H[V2 Recall@50 6/7]
 ```
 
-단일 AI 검색어를 신뢰하지 않고 여러 검색 전략을 합친 뒤 검색 품질도 평가합니다.
+- Golden Corpus v1은 고정한 채 검색 전략만 변경합니다.
+- 실제 V1/V2 결과는 `evals/retrieval/history/`에 보존합니다.
+- 현재 HBM Thermal Benchmark에서는 Multi-query + RRF가 가장 안정적이었습니다.
 
 ## 4. Golden Corpus 생명주기
 

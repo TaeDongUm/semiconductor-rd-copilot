@@ -186,6 +186,56 @@ class OpenAlexClient:
 
         return [normalize_work(work, query) for work in results]
 
+    def get_work_by_doi(self, doi: str) -> PaperRecord | None:
+        """Look up one work by DOI without using search ranking.
+
+        This is used for source-coverage diagnostics so retrieval quality is not penalized when
+        a Golden paper is absent from OpenAlex entirely. A 404 means "not indexed" and returns
+        None; rate-limit responses reuse the same retry policy as search().
+        """
+        normalized = _normalize_doi(doi)
+        if not normalized:
+            raise ValueError("doi must not be empty")
+
+        params = {}
+        if self.api_key:
+            params["api_key"] = self.api_key
+        suffix = f"?{urlencode(params)}" if params else ""
+        # OpenAlex accepts the short external-ID form /works/doi:<doi>.
+        from urllib.parse import quote
+        url = f"{self.BASE_URL}/doi:{quote(normalized, safe='')}" + suffix
+        request = Request(
+            url,
+            headers={
+                "Accept": "application/json",
+                "User-Agent": "semiconductor-rd-copilot/0.1",
+            },
+        )
+
+        payload = None
+        for attempt in range(self.max_retries + 1):
+            try:
+                with self.opener(request, timeout=self.timeout) as response:
+                    payload = json.loads(response.read().decode("utf-8"))
+                break
+            except HTTPError as exc:
+                if exc.code == 404:
+                    return None
+                if exc.code != 429 or attempt >= self.max_retries:
+                    raise OpenAlexError(f"OpenAlex request failed: HTTP {exc.code}") from exc
+                retry_after = exc.headers.get("Retry-After") if exc.headers else None
+                try:
+                    wait_seconds = float(retry_after) if retry_after else float(2 ** attempt)
+                except (TypeError, ValueError):
+                    wait_seconds = float(2 ** attempt)
+                self.sleep_fn(min(max(wait_seconds, 1.0), 30.0))
+            except Exception as exc:
+                raise OpenAlexError(f"OpenAlex request failed: {exc}") from exc
+
+        if not isinstance(payload, dict):
+            raise OpenAlexError("OpenAlex singleton response is invalid")
+        return normalize_work(payload, f"doi:{normalized}")
+
     def search_many(
         self,
         queries: Iterable[str],

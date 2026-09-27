@@ -13,6 +13,9 @@ from src.ui_data import (
     find_default_demo_run,
     flatten_evidence,
     load_demo_bundle,
+    load_retrieval_evaluation,
+    retrieval_comparison_rows,
+    retrieval_summary_metrics,
 )
 
 PROJECT_ROOT = Path(__file__).resolve().parent
@@ -21,6 +24,11 @@ PROJECT_ROOT = Path(__file__).resolve().parent
 @st.cache_data
 def load_verified_demo():
     return load_demo_bundle(find_default_demo_run(PROJECT_ROOT))
+
+
+@st.cache_data
+def load_verified_retrieval_evaluation():
+    return load_retrieval_evaluation(PROJECT_ROOT)
 
 
 def render_header() -> None:
@@ -63,8 +71,8 @@ def render_verified_demo(bundle: dict) -> None:
             st.markdown(f"**{item['id']} · {item['name']}**")
             st.caption("검색 용어: " + ", ".join(item.get("search_terms", [])))
 
-    result_tab, papers_tab, evidence_tab, validation_tab, brief_tab = st.tabs(
-        ["Decision Map", "Papers", "Evidence", "Validation", "Investigation Brief"]
+    result_tab, retrieval_tab, papers_tab, evidence_tab, validation_tab, brief_tab = st.tabs(
+        ["Decision Map", "Retrieval Eval", "Papers", "Evidence", "Validation", "Investigation Brief"]
     )
 
     with result_tab:
@@ -103,6 +111,28 @@ def render_verified_demo(bundle: dict) -> None:
             st.json(conflicts, expanded=False)
         else:
             st.success("현재 검증된 Evidence에서는 직접적인 positive-vs-negative conflict가 감지되지 않았습니다.")
+
+    with retrieval_tab:
+        st.markdown("### Retrieval Evaluation · V1 → V2")
+        try:
+            retrieval = load_verified_retrieval_evaluation()
+            summary = retrieval_summary_metrics(retrieval)
+            r1, r2, r3, r4 = st.columns(4)
+            r1.metric("OpenAlex Source Coverage", summary["source_coverage"])
+            r2.metric("Multi-query Recall@20", summary["multi_v2"], summary["multi_delta"])
+            r3.metric("V1 Multi-query Recall@20", summary["multi_v1"])
+            r4.metric("V2 Multi-query Recall@50", summary["best_at_50"])
+            st.dataframe(retrieval_comparison_rows(retrieval), use_container_width=True, hide_index=True)
+            st.caption(
+                "동일한 Golden Corpus v1(7편)을 고정하고 Query/Ranking 전략만 변경했습니다. "
+                "7/7 논문이 OpenAlex에 색인되어 있어 V1 실패를 source coverage가 아닌 retrieval/ranking 문제로 분리할 수 있었습니다."
+            )
+            st.info(
+                "이 HBM Thermal 소규모 Benchmark에서는 Multi-query + RRF가 가장 안정적이었습니다. "
+                "Semantic 단독 검색은 Recall@20 14.3%로 개선되지 않았으며, 결과를 다른 도메인으로 일반화하지 않습니다."
+            )
+        except FileNotFoundError as exc:
+            st.warning(f"Retrieval 평가 결과를 찾지 못했습니다: {exc}")
 
     with papers_tab:
         st.markdown("### 근거 논문")
@@ -145,9 +175,9 @@ def render_verified_demo(bundle: dict) -> None:
         with right:
             st.markdown("### Retrieval Provenance")
             st.json(provenance, expanded=True)
-        st.warning(
-            "이 Run은 downstream Evidence/Decision workflow를 검증한 것입니다. "
-            "OpenAlex retrieval recall/ranking 성능을 증명한 결과는 아닙니다."
+        st.info(
+            "이 Run의 downstream Evidence/Decision 단계는 검증된 실제 논문을 동일 스키마로 주입해 확인했습니다. "
+            "OpenAlex retrieval 품질은 별도의 Retrieval Eval 탭에서 Golden Corpus 기반 V1/V2 Benchmark로 검증합니다."
         )
 
     with brief_tab:

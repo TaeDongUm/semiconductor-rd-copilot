@@ -102,3 +102,14 @@ class OpenAlexTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+def test_get_work_by_doi_uses_external_id_endpoint():
+    opener = FakeOpener([sample_work()])
+    client = OpenAlexClient(api_key="k", opener=opener)
+    result = client.get_work_by_doi("10.1234/example")
+    assert result is not None
+    assert result.doi == "10.1234/example"
+    url = opener.calls[0][0]
+    assert "/works/doi:10.1234%2Fexample" in url
+    assert "api_key=k" in url

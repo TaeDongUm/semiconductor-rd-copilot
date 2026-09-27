@@ -30,63 +30,72 @@ def _unique_queries(queries: list[SearchQuery]) -> tuple[SearchQuery, ...]:
     return tuple(unique)
 
 
-def generate_query_plan(case: EngineeringCase, max_keyword_queries: int = 12) -> QueryPlan:
-    """Build a bounded multi-query plan from a reviewable Engineering Case.
+def _quoted(term: str) -> str:
+    cleaned = " ".join(term.strip().split())
+    if not cleaned:
+        raise ValueError("search term must not be empty")
+    # Keep multi-word engineering concepts intact; single tokens do not need quotes.
+    return f'"{cleaned}"' if " " in cleaned else cleaned
 
-    A decomposition model may propose vocabulary, but retrieval does not depend on one opaque
-    generated query. Each constraint contributes at least one focused query and, when room is
-    available, a vocabulary-expansion query using an alternative literature term.
+
+def _or_group(terms: list[str], limit: int) -> str:
+    selected=[]
+    seen=set()
+    for term in terms:
+        norm=" ".join(term.lower().split())
+        if not norm or norm in seen:
+            continue
+        seen.add(norm)
+        selected.append(_quoted(term))
+        if len(selected)>=limit:
+            break
+    if not selected:
+        raise ValueError("at least one search term is required")
+    return f"({' OR '.join(selected)})" if len(selected)>1 else selected[0]
+
+
+def generate_query_plan(case: EngineeringCase, max_keyword_queries: int = 12) -> QueryPlan:
+    """Build a bounded, reviewable multi-query plan from an Engineering Case.
+
+    V2 deliberately avoids requiring one exact problem phrase in every query.  The broad query
+    combines domain aliases and problem vocabulary, while each constraint receives its own
+    concept-family query.  This improves recall without inserting titles or terms learned from
+    the Golden Corpus.
     """
     if max_keyword_queries < 2:
         raise ValueError("max_keyword_queries must be at least 2")
 
-    primary_domain = case.domain_terms[0]
-    primary_problem = case.problem_terms[0]
+    domain_group = _or_group(case.domain_terms, limit=3)
+    problem_group = _or_group(case.problem_terms, limit=4)
     queries: list[SearchQuery] = [
-        SearchQuery("broad", f'"{primary_domain}" "{primary_problem}"'),
+        SearchQuery("broad_boolean", f"{domain_group} AND {problem_group}"),
     ]
 
-    if len(case.domain_terms) > 1:
-        queries.append(
-            SearchQuery("domain_alias", f'"{case.domain_terms[1]}" "{primary_problem}"')
-        )
-
-    # First pass: every constraint must be represented.
+    # Each engineering constraint gets a query independent of the primary problem wording.
+    # This catches relevant approaches whose titles/abstracts use different thermal vocabulary.
     for constraint in case.constraints:
-        focus = constraint.search_terms[0]
+        constraint_group = _or_group(constraint.search_terms, limit=4)
         queries.append(
             SearchQuery(
-                "constraint",
-                f'"{primary_domain}" "{primary_problem}" "{focus}"',
+                "constraint_family",
+                f"{domain_group} AND {constraint_group}",
                 constraint.id,
             )
         )
-
-    # Second pass: use alternative literature vocabulary when the query budget allows it.
-    for constraint in case.constraints:
         if len(queries) >= max_keyword_queries:
             break
-        if len(constraint.search_terms) < 2:
-            continue
-        alias = constraint.search_terms[1]
-        domain = case.domain_terms[1] if len(case.domain_terms) > 1 else primary_domain
-        problem = case.problem_terms[1] if len(case.problem_terms) > 1 else primary_problem
-        queries.append(
-            SearchQuery(
-                "constraint_alias",
-                f'"{domain}" "{problem}" "{alias}"',
-                constraint.id,
-            )
-        )
 
-    # One broad vocabulary-expansion query catches terminology drift across subfields.
-    if len(queries) < max_keyword_queries and len(case.domain_terms) > 2 and len(case.problem_terms) > 1:
-        queries.append(
-            SearchQuery(
-                "vocabulary_expansion",
-                f'"{case.domain_terms[2]}" "{case.problem_terms[1]}"',
+    # If budget remains, add domain/problem pair queries.  These are generic aliases from the
+    # case definition, not paper-title-derived keywords, so the benchmark remains non-leaky.
+    for domain in case.domain_terms[1:]:
+        if len(queries) >= max_keyword_queries:
+            break
+        for problem in case.problem_terms[1:]:
+            if len(queries) >= max_keyword_queries:
+                break
+            queries.append(
+                SearchQuery("alias_pair", f"{_quoted(domain)} AND {_quoted(problem)}")
             )
-        )
 
     return QueryPlan(
         keyword_queries=_unique_queries(queries)[:max_keyword_queries],

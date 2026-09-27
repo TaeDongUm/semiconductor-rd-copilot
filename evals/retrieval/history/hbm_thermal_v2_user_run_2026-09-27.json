@@ -1,0 +1,354 @@
+{
+  "benchmarkId": "HBM-THERMAL-RETRIEVAL-V2",
+  "executedAt": "2026-09-27T09:36:47.778Z",
+  "caseId": "HBM-THERMAL-001",
+  "sourceCoverage": [
+    {
+      "id": "P01",
+      "doi": "10.3390/electronics14132682",
+      "indexed": true,
+      "hasAbstract": true,
+      "openalexId": "https://openalex.org/W4411930181",
+      "title": "Thermal Issues Related to Hybrid Bonding of 3D-Stacked High Bandwidth Memory: A Comprehensive Review"
+    },
+    {
+      "id": "P02",
+      "doi": "10.3390/mi17091065",
+      "indexed": true,
+      "hasAbstract": true,
+      "openalexId": "https://openalex.org/W7211973573",
+      "title": "Thermal Management and Reliability Engineering of Advanced HBM Packages: Materials, Interfaces, and Integrated Design Strategies"
+    },
+    {
+      "id": "P03",
+      "doi": "10.1109/ectc51909.2023.00179",
+      "indexed": true,
+      "hasAbstract": true,
+      "openalexId": "https://openalex.org/W4385516745",
+      "title": "C2W Hybrid Bonding Interconnect Technology for Higher Density and Better Thermal Dissipation of High Bandwidth Memory"
+    },
+    {
+      "id": "P04",
+      "doi": "10.1016/j.mssp.2022.107063",
+      "indexed": true,
+      "hasAbstract": false,
+      "openalexId": "https://openalex.org/W4293146975",
+      "title": "Optimization of Cu protrusion of wafer-to-wafer hybrid bonding for HBM packages application"
+    },
+    {
+      "id": "P05",
+      "doi": "10.1007/s13391-025-00557-9",
+      "indexed": true,
+      "hasAbstract": false,
+      "openalexId": "https://openalex.org/W4408080844",
+      "title": "3D Integrated Process and Hybrid Bonding of High Bandwidth Memory (HBM)"
+    },
+    {
+      "id": "P06",
+      "doi": "10.1109/tcpmt.2022.3201673",
+      "indexed": true,
+      "hasAbstract": true,
+      "openalexId": "https://openalex.org/W4293173907",
+      "title": "Thermal and Signal Integrity Co-Design and Verification of Embedded Cooling Structure With Thermal Transmission Line for High Bandwidth Memory Module"
+    },
+    {
+      "id": "P09",
+      "doi": "10.5573/jsts.2026.26.2.97",
+      "indexed": true,
+      "hasAbstract": true,
+      "openalexId": "https://openalex.org/W7155943211",
+      "title": "Heat Dissipation Improvement Using Plugged Sidewall for Three-dimensional (3D) Package of High-stacked High Bandwidth Memory (HBM)"
+    }
+  ],
+  "results": {
+    "single_keyword_v1_baseline": [
+      {
+        "name": "single_keyword_v1_baseline",
+        "k": 10,
+        "matched": 2,
+        "recall": 0.2857142857142857,
+        "coveredCount": 7,
+        "conditionalRecall": 0.2857142857142857,
+        "missing": [
+          "doi:10.3390/mi17091065",
+          "doi:10.1109/ectc51909.2023.00179",
+          "doi:10.1016/j.mssp.2022.107063",
+          "doi:10.1109/tcpmt.2022.3201673",
+          "doi:10.5573/jsts.2026.26.2.97"
+        ],
+        "sourceUnavailable": [],
+        "retrievalMiss": [
+          "doi:10.3390/mi17091065",
+          "doi:10.1109/ectc51909.2023.00179",
+          "doi:10.1016/j.mssp.2022.107063",
+          "doi:10.1109/tcpmt.2022.3201673",
+          "doi:10.5573/jsts.2026.26.2.97"
+        ]
+      },
+      {
+        "name": "single_keyword_v1_baseline",
+        "k": 20,
+        "matched": 2,
+        "recall": 0.2857142857142857,
+        "coveredCount": 7,
+        "conditionalRecall": 0.2857142857142857,
+        "missing": [
+          "doi:10.3390/mi17091065",
+          "doi:10.1109/ectc51909.2023.00179",
+          "doi:10.1016/j.mssp.2022.107063",
+          "doi:10.1109/tcpmt.2022.3201673",
+          "doi:10.5573/jsts.2026.26.2.97"
+        ],
+        "sourceUnavailable": [],
+        "retrievalMiss": [
+          "doi:10.3390/mi17091065",
+          "doi:10.1109/ectc51909.2023.00179",
+          "doi:10.1016/j.mssp.2022.107063",
+          "doi:10.1109/tcpmt.2022.3201673",
+          "doi:10.5573/jsts.2026.26.2.97"
+        ]
+      },
+      {
+        "name": "single_keyword_v1_baseline",
+        "k": 50,
+        "matched": 3,
+        "recall": 0.42857142857142855,
+        "coveredCount": 7,
+        "conditionalRecall": 0.42857142857142855,
+        "missing": [
+          "doi:10.1109/ectc51909.2023.00179",
+          "doi:10.1016/j.mssp.2022.107063",
+          "doi:10.1109/tcpmt.2022.3201673",
+          "doi:10.5573/jsts.2026.26.2.97"
+        ],
+        "sourceUnavailable": [],
+        "retrievalMiss": [
+          "doi:10.1109/ectc51909.2023.00179",
+          "doi:10.1016/j.mssp.2022.107063",
+          "doi:10.1109/tcpmt.2022.3201673",
+          "doi:10.5573/jsts.2026.26.2.97"
+        ]
+      }
+    ],
+    "multi_query_rrf_v2": [
+      {
+        "name": "multi_query_rrf_v2",
+        "k": 10,
+        "matched": 4,
+        "recall": 0.5714285714285714,
+        "coveredCount": 7,
+        "conditionalRecall": 0.5714285714285714,
+        "missing": [
+          "doi:10.3390/mi17091065",
+          "doi:10.1007/s13391-025-00557-9",
+          "doi:10.5573/jsts.2026.26.2.97"
+        ],
+        "sourceUnavailable": [],
+        "retrievalMiss": [
+          "doi:10.3390/mi17091065",
+          "doi:10.1007/s13391-025-00557-9",
+          "doi:10.5573/jsts.2026.26.2.97"
+        ]
+      },
+      {
+        "name": "multi_query_rrf_v2",
+        "k": 20,
+        "matched": 5,
+        "recall": 0.7142857142857143,
+        "coveredCount": 7,
+        "conditionalRecall": 0.7142857142857143,
+        "missing": [
+          "doi:10.3390/mi17091065",
+          "doi:10.5573/jsts.2026.26.2.97"
+        ],
+        "sourceUnavailable": [],
+        "retrievalMiss": [
+          "doi:10.3390/mi17091065",
+          "doi:10.5573/jsts.2026.26.2.97"
+        ]
+      },
+      {
+        "name": "multi_query_rrf_v2",
+        "k": 50,
+        "matched": 6,
+        "recall": 0.8571428571428571,
+        "coveredCount": 7,
+        "conditionalRecall": 0.8571428571428571,
+        "missing": [
+          "doi:10.5573/jsts.2026.26.2.97"
+        ],
+        "sourceUnavailable": [],
+        "retrievalMiss": [
+          "doi:10.5573/jsts.2026.26.2.97"
+        ]
+      }
+    ],
+    "semantic": [
+      {
+        "name": "semantic",
+        "k": 10,
+        "matched": 1,
+        "recall": 0.14285714285714285,
+        "coveredCount": 7,
+        "conditionalRecall": 0.14285714285714285,
+        "missing": [
+          "doi:10.3390/mi17091065",
+          "doi:10.1109/ectc51909.2023.00179",
+          "doi:10.1016/j.mssp.2022.107063",
+          "doi:10.1007/s13391-025-00557-9",
+          "doi:10.1109/tcpmt.2022.3201673",
+          "doi:10.5573/jsts.2026.26.2.97"
+        ],
+        "sourceUnavailable": [],
+        "retrievalMiss": [
+          "doi:10.3390/mi17091065",
+          "doi:10.1109/ectc51909.2023.00179",
+          "doi:10.1016/j.mssp.2022.107063",
+          "doi:10.1007/s13391-025-00557-9",
+          "doi:10.1109/tcpmt.2022.3201673",
+          "doi:10.5573/jsts.2026.26.2.97"
+        ]
+      },
+      {
+        "name": "semantic",
+        "k": 20,
+        "matched": 1,
+        "recall": 0.14285714285714285,
+        "coveredCount": 7,
+        "conditionalRecall": 0.14285714285714285,
+        "missing": [
+          "doi:10.3390/mi17091065",
+          "doi:10.1109/ectc51909.2023.00179",
+          "doi:10.1016/j.mssp.2022.107063",
+          "doi:10.1007/s13391-025-00557-9",
+          "doi:10.1109/tcpmt.2022.3201673",
+          "doi:10.5573/jsts.2026.26.2.97"
+        ],
+        "sourceUnavailable": [],
+        "retrievalMiss": [
+          "doi:10.3390/mi17091065",
+          "doi:10.1109/ectc51909.2023.00179",
+          "doi:10.1016/j.mssp.2022.107063",
+          "doi:10.1007/s13391-025-00557-9",
+          "doi:10.1109/tcpmt.2022.3201673",
+          "doi:10.5573/jsts.2026.26.2.97"
+        ]
+      },
+      {
+        "name": "semantic",
+        "k": 50,
+        "matched": 1,
+        "recall": 0.14285714285714285,
+        "coveredCount": 7,
+        "conditionalRecall": 0.14285714285714285,
+        "missing": [
+          "doi:10.3390/mi17091065",
+          "doi:10.1109/ectc51909.2023.00179",
+          "doi:10.1016/j.mssp.2022.107063",
+          "doi:10.1007/s13391-025-00557-9",
+          "doi:10.1109/tcpmt.2022.3201673",
+          "doi:10.5573/jsts.2026.26.2.97"
+        ],
+        "sourceUnavailable": [],
+        "retrievalMiss": [
+          "doi:10.3390/mi17091065",
+          "doi:10.1109/ectc51909.2023.00179",
+          "doi:10.1016/j.mssp.2022.107063",
+          "doi:10.1007/s13391-025-00557-9",
+          "doi:10.1109/tcpmt.2022.3201673",
+          "doi:10.5573/jsts.2026.26.2.97"
+        ]
+      }
+    ],
+    "hybrid_rrf_v2": [
+      {
+        "name": "hybrid_rrf_v2",
+        "k": 10,
+        "matched": 4,
+        "recall": 0.5714285714285714,
+        "coveredCount": 7,
+        "conditionalRecall": 0.5714285714285714,
+        "missing": [
+          "doi:10.3390/mi17091065",
+          "doi:10.1007/s13391-025-00557-9",
+          "doi:10.5573/jsts.2026.26.2.97"
+        ],
+        "sourceUnavailable": [],
+        "retrievalMiss": [
+          "doi:10.3390/mi17091065",
+          "doi:10.1007/s13391-025-00557-9",
+          "doi:10.5573/jsts.2026.26.2.97"
+        ]
+      },
+      {
+        "name": "hybrid_rrf_v2",
+        "k": 20,
+        "matched": 5,
+        "recall": 0.7142857142857143,
+        "coveredCount": 7,
+        "conditionalRecall": 0.7142857142857143,
+        "missing": [
+          "doi:10.3390/mi17091065",
+          "doi:10.5573/jsts.2026.26.2.97"
+        ],
+        "sourceUnavailable": [],
+        "retrievalMiss": [
+          "doi:10.3390/mi17091065",
+          "doi:10.5573/jsts.2026.26.2.97"
+        ]
+      },
+      {
+        "name": "hybrid_rrf_v2",
+        "k": 50,
+        "matched": 5,
+        "recall": 0.7142857142857143,
+        "coveredCount": 7,
+        "conditionalRecall": 0.7142857142857143,
+        "missing": [
+          "doi:10.3390/mi17091065",
+          "doi:10.5573/jsts.2026.26.2.97"
+        ],
+        "sourceUnavailable": [],
+        "retrievalMiss": [
+          "doi:10.3390/mi17091065",
+          "doi:10.5573/jsts.2026.26.2.97"
+        ]
+      }
+    ]
+  },
+  "v1Baseline": {
+    "single_keyword": {
+      "10": 2,
+      "20": 2,
+      "50": 3
+    },
+    "multi_query_keyword": {
+      "10": 2,
+      "20": 2,
+      "50": 3
+    },
+    "semantic": {
+      "10": 1,
+      "20": 1,
+      "50": 1
+    },
+    "hybrid": {
+      "10": 3,
+      "20": 3,
+      "50": 3
+    }
+  },
+  "queryPlan": [
+    "(\"high bandwidth memory\" OR HBM OR \"3D stacked DRAM\") AND (\"thermal management\" OR \"thermal resistance\" OR \"heat accumulation\" OR hotspot)",
+    "(\"high bandwidth memory\" OR HBM OR \"3D stacked DRAM\") AND (\"thermal resistance\" OR \"junction temperature\" OR hotspot OR \"heat dissipation\")",
+    "(\"high bandwidth memory\" OR HBM OR \"3D stacked DRAM\") AND (\"hybrid bonding\" OR interconnect OR \"stack height\" OR TSV)",
+    "(\"high bandwidth memory\" OR HBM OR \"3D stacked DRAM\") AND (\"thermo-mechanical reliability\" OR \"CTE mismatch\" OR warpage OR delamination)",
+    "(\"high bandwidth memory\" OR HBM OR \"3D stacked DRAM\") AND (manufacturability OR \"process integration\" OR fabrication OR \"bonding process\")",
+    "(\"high bandwidth memory\" OR HBM OR \"3D stacked DRAM\") AND (\"signal integrity\" OR \"electrical performance\" OR \"power integrity\")",
+    "(\"high bandwidth memory\" OR HBM OR \"3D stacked DRAM\") AND (yield OR cost OR \"process yield\")",
+    "HBM AND \"thermal resistance\"",
+    "HBM AND \"heat accumulation\"",
+    "HBM AND hotspot"
+  ],
+  "semanticQuery": "Investigate thermal-management approaches for increasingly stacked high bandwidth memory, focusing on heat accumulation and thermal resistance while considering thermo-mechanical reliability, manufacturability, signal integrity, cost, and yield trade-offs."
+}

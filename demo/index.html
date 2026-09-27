@@ -64,5 +64,21 @@ details { padding: 12px 0; border-bottom:1px solid #e6e9ed; } summary { cursor:p
         <p><strong>DOI:</strong> 10.5573/JSTS.2026.26.2.97 · <strong>Year:</strong> 2026</p>
         <p><strong>Source:</strong> Journal of Semiconductor Technology and Science</p>
         </details></section>
+
+<section>
+<h2>Retrieval Evaluation · V1 → V2</h2>
+<div class="metrics">
+<div class="metric"><strong>OpenAlex Source Coverage</strong><span>7/7</span></div>
+<div class="metric"><strong>Multi-query Recall@20</strong><span>71.4%</span></div>
+<div class="metric"><strong>Improvement</strong><span>+42.9%p</span></div>
+<div class="metric"><strong>Multi-query Recall@50</strong><span>85.7%</span></div>
+</div>
+<table>
+<thead><tr><th>Strategy</th><th>V1 Recall@20</th><th>V2 Recall@20</th><th>Delta</th></tr></thead>
+<tbody><tr><td>Single keyword</td><td>28.6%</td><td>28.6%</td><td>+0.0%p</td></tr><tr><td>Multi-query + RRF</td><td>28.6%</td><td>71.4%</td><td>+42.9%p</td></tr><tr><td>Semantic</td><td>14.3%</td><td>14.3%</td><td>+0.0%p</td></tr><tr><td>Hybrid + RRF</td><td>42.9%</td><td>71.4%</td><td>+28.6%p</td></tr></tbody>
+</table>
+<p class="muted">Golden Corpus v1 7편을 고정하고 Query/Ranking 전략만 변경했습니다. 7/7 논문이 OpenAlex에 색인되었습니다. 이 소규모 HBM Thermal benchmark에서는 Multi-query + RRF가 Recall@20 28.6% → 71.4%, Recall@50 42.9% → 85.7%로 개선되었습니다.</p>
+</section>
+
 <section><h2>Interpretation Rule</h2><p>This demo does not identify a best technology or a proven root cause. It narrows the investigation space using verified evidence and preserves unresolved constraints for human review.</p></section>
 </main></body></html>

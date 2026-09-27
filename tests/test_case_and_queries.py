@@ -61,3 +61,15 @@ class CaseAndQueryTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+def test_query_plan_uses_boolean_concept_families_without_golden_title_leakage():
+    payload = CaseAndQueryTests().base_payload()
+    payload["constraints"].append({"id": "C2", "name": "Reliability", "search_terms": ["CTE mismatch", "warpage"]})
+    path = CaseAndQueryTests().write_case(payload)
+    plan = generate_query_plan(load_case(path), max_keyword_queries=6)
+    text = "\n".join(q.query for q in plan.keyword_queries)
+    assert " OR " in text
+    assert " AND " in text
+    assert "CTE mismatch" in text
+    assert "plugged sidewall" not in text.lower()

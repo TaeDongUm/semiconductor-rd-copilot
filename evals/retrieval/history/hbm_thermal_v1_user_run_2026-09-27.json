@@ -1,0 +1,57 @@
+{
+  "benchmark_id": "HBM-THERMAL-RETRIEVAL-V1-USER-RUN",
+  "recorded_at": "2026-09-27T18:19:00+09:00",
+  "source": "user-provided browser benchmark screenshot",
+  "golden_count": 7,
+  "note": "Immutable baseline captured before v2 query/fusion changes.",
+  "results": {
+    "single_keyword": {
+      "recall_at_10": 0.2857142857142857,
+      "recall_at_20": 0.2857142857142857,
+      "recall_at_50": 0.42857142857142855,
+      "missing_at_20": [
+        "doi:10.3390/mi17091065",
+        "doi:10.1109/ectc51909.2023.00179",
+        "doi:10.1016/j.mssp.2022.107063",
+        "doi:10.1109/tcpmt.2022.3201673",
+        "doi:10.5573/jsts.2026.26.2.97"
+      ]
+    },
+    "multi_query_keyword": {
+      "recall_at_10": 0.2857142857142857,
+      "recall_at_20": 0.2857142857142857,
+      "recall_at_50": 0.42857142857142855,
+      "missing_at_20": [
+        "doi:10.3390/mi17091065",
+        "doi:10.1109/ectc51909.2023.00179",
+        "doi:10.1016/j.mssp.2022.107063",
+        "doi:10.1109/tcpmt.2022.3201673",
+        "doi:10.5573/jsts.2026.26.2.97"
+      ]
+    },
+    "semantic": {
+      "recall_at_10": 0.14285714285714285,
+      "recall_at_20": 0.14285714285714285,
+      "recall_at_50": 0.14285714285714285,
+      "missing_at_20": [
+        "doi:10.3390/mi17091065",
+        "doi:10.1109/ectc51909.2023.00179",
+        "doi:10.1016/j.mssp.2022.107063",
+        "doi:10.1007/s13391-025-00557-9",
+        "doi:10.1109/tcpmt.2022.3201673",
+        "doi:10.5573/jsts.2026.26.2.97"
+      ]
+    },
+    "hybrid": {
+      "recall_at_10": 0.42857142857142855,
+      "recall_at_20": 0.42857142857142855,
+      "recall_at_50": 0.42857142857142855,
+      "missing_at_20": [
+        "doi:10.3390/mi17091065",
+        "doi:10.1016/j.mssp.2022.107063",
+        "doi:10.1109/tcpmt.2022.3201673",
+        "doi:10.5573/jsts.2026.26.2.97"
+      ]
+    }
+  }
+}

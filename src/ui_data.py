@@ -115,3 +115,51 @@ def find_default_demo_run(project_root: Path) -> Path:
     if not candidates:
         raise FileNotFoundError("no verified live demo run found")
     return candidates[-1]
+
+def load_retrieval_evaluation(project_root: Path) -> dict[str, Any]:
+    comparison_path = project_root / "evals" / "retrieval" / "hbm_thermal_v1_vs_v2.json"
+    v2_path = project_root / "evals" / "retrieval" / "history" / "hbm_thermal_v2_user_run_2026-09-27.json"
+    if not comparison_path.exists() or not v2_path.exists():
+        raise FileNotFoundError("retrieval evaluation artifacts are missing")
+    return {
+        "comparison": load_json(comparison_path),
+        "v2": load_json(v2_path),
+    }
+
+
+def retrieval_comparison_rows(evaluation: dict[str, Any]) -> list[dict[str, str]]:
+    comparison = evaluation["comparison"]
+    labels = {
+        "single_keyword": "Single keyword",
+        "multi_query": "Multi-query + RRF",
+        "semantic": "Semantic",
+        "hybrid": "Hybrid + RRF",
+    }
+    rows: list[dict[str, str]] = []
+    for key, label in labels.items():
+        item = comparison.get("recall_at_20", {}).get(key, {})
+        rows.append(
+            {
+                "Strategy": label,
+                "V1 Recall@20": f"{float(item.get('v1', 0)) * 100:.1f}%",
+                "V2 Recall@20": f"{float(item.get('v2', 0)) * 100:.1f}%",
+                "Delta": f"{float(item.get('delta_pp', 0)):+.1f}%p",
+            }
+        )
+    return rows
+
+
+def retrieval_summary_metrics(evaluation: dict[str, Any]) -> dict[str, str]:
+    comparison = evaluation["comparison"]
+    source = comparison.get("source_coverage", {})
+    best = comparison.get("best_observed_strategy", {})
+    multi = comparison.get("recall_at_20", {}).get("multi_query", {})
+    return {
+        "source_coverage": f"{source.get('indexed', 0)}/{source.get('golden', 0)}",
+        "with_abstract": f"{source.get('with_abstract', 0)}/{source.get('golden', 0)}",
+        "multi_v1": f"{float(multi.get('v1', 0)) * 100:.1f}%",
+        "multi_v2": f"{float(multi.get('v2', 0)) * 100:.1f}%",
+        "multi_delta": f"{float(multi.get('delta_pp', 0)):+.1f}%p",
+        "best_at_50": f"{float(best.get('recall_at_50', 0)) * 100:.1f}%",
+    }
+

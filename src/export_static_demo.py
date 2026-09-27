@@ -4,14 +4,22 @@ import argparse
 import html
 from pathlib import Path
 
-from .ui_data import build_matrix_rows, demo_metrics, find_default_demo_run, load_demo_bundle
+from .ui_data import (
+    build_matrix_rows,
+    demo_metrics,
+    find_default_demo_run,
+    load_demo_bundle,
+    load_retrieval_evaluation,
+    retrieval_comparison_rows,
+    retrieval_summary_metrics,
+)
 
 
 def esc(value: object) -> str:
     return html.escape(str(value), quote=True)
 
 
-def render_static_demo(bundle: dict) -> str:
+def render_static_demo(bundle: dict, retrieval: dict | None = None) -> str:
     case = bundle["case"]
     decision = bundle["decision"]
     metrics = demo_metrics(bundle)
@@ -69,6 +77,36 @@ def render_static_demo(bundle: dict) -> str:
     provenance = bundle.get("provenance", {})
     provenance_note = esc(provenance.get("claim", ""))
 
+    retrieval_html = ""
+    if retrieval is not None:
+        summary = retrieval_summary_metrics(retrieval)
+        rows = retrieval_comparison_rows(retrieval)
+        row_html = "".join(
+            "<tr>"
+            f"<td>{esc(row['Strategy'])}</td>"
+            f"<td>{esc(row['V1 Recall@20'])}</td>"
+            f"<td>{esc(row['V2 Recall@20'])}</td>"
+            f"<td>{esc(row['Delta'])}</td>"
+            "</tr>"
+            for row in rows
+        )
+        retrieval_html = f"""
+<section>
+<h2>Retrieval Evaluation · V1 → V2</h2>
+<div class=\"metrics\">
+<div class=\"metric\"><strong>OpenAlex Source Coverage</strong><span>{esc(summary['source_coverage'])}</span></div>
+<div class=\"metric\"><strong>Multi-query Recall@20</strong><span>{esc(summary['multi_v2'])}</span></div>
+<div class=\"metric\"><strong>Improvement</strong><span>{esc(summary['multi_delta'])}</span></div>
+<div class=\"metric\"><strong>Multi-query Recall@50</strong><span>{esc(summary['best_at_50'])}</span></div>
+</div>
+<table>
+<thead><tr><th>Strategy</th><th>V1 Recall@20</th><th>V2 Recall@20</th><th>Delta</th></tr></thead>
+<tbody>{row_html}</tbody>
+</table>
+<p class=\"muted\">Golden Corpus v1 7편을 고정하고 Query/Ranking 전략만 변경했습니다. 7/7 논문이 OpenAlex에 색인되었습니다. 이 소규모 HBM Thermal benchmark에서는 Multi-query + RRF가 Recall@20 28.6% → 71.4%, Recall@50 42.9% → 85.7%로 개선되었습니다.</p>
+</section>
+"""
+
     return f'''<!doctype html>
 <html lang="ko">
 <head>
@@ -100,6 +138,7 @@ details {{ padding: 12px 0; border-bottom:1px solid #e6e9ed; }} summary {{ curso
 <section><h2>Key Unknowns</h2><ul>{unknown_html}</ul></section>
 <section><h2>Candidate Hypotheses & Next Validation</h2>{hypothesis_html}</section>
 <section><h2>Evidence Papers</h2>{papers_html}</section>
+{retrieval_html}
 <section><h2>Interpretation Rule</h2><p>This demo does not identify a best technology or a proven root cause. It narrows the investigation space using verified evidence and preserves unresolved constraints for human review.</p></section>
 </main></body></html>'''
 
@@ -113,7 +152,11 @@ def main() -> None:
     project_root = Path(__file__).resolve().parents[1]
     run_dir = args.run_dir or find_default_demo_run(project_root)
     bundle = load_demo_bundle(run_dir)
-    content = render_static_demo(bundle)
+    try:
+        retrieval = load_retrieval_evaluation(project_root)
+    except FileNotFoundError:
+        retrieval = None
+    content = render_static_demo(bundle, retrieval)
     output = args.output if args.output.is_absolute() else project_root / args.output
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(content, encoding="utf-8")

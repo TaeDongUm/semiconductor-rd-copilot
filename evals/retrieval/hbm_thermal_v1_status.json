@@ -1,7 +1,14 @@
 {
   "benchmark_id": "HBM-THERMAL-RETRIEVAL-V1",
   "executed_in_build_environment": false,
-  "reason": "api.openalex.org DNS is unavailable in the build container; use src.retrieval_benchmark or demo/retrieval-benchmark.html in an internet-enabled environment.",
-  "expected_runtime_cost": "12 OpenAlex search calls for default plan; within anonymous/free budget under current pricing.",
-  "result_policy": "Do not report Recall values until a real OpenAlex run completes."
+  "executed_by_user": true,
+  "executed_at": "2026-09-27T18:19:00+09:00",
+  "result_file": "evals/retrieval/history/hbm_thermal_v1_user_run_2026-09-27.json",
+  "summary": {
+    "single_keyword_recall_at_20": 0.2857142857142857,
+    "multi_query_keyword_recall_at_20": 0.2857142857142857,
+    "semantic_recall_at_20": 0.14285714285714285,
+    "hybrid_recall_at_20": 0.42857142857142855
+  },
+  "note": "Build container could not reach OpenAlex, but the browser benchmark was executed by the user in an internet-enabled environment."
 }

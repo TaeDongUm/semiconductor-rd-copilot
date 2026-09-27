@@ -2,7 +2,7 @@ import unittest
 from pathlib import Path
 
 from src.export_static_demo import render_static_demo
-from src.ui_data import find_default_demo_run, load_demo_bundle
+from src.ui_data import find_default_demo_run, load_demo_bundle, load_retrieval_evaluation
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -16,6 +16,15 @@ class StaticDemoTest(unittest.TestCase):
         self.assertIn("plugged sidewall", page)
         self.assertIn("Unknowns", page)
         self.assertIn("5", page)
+
+    def test_static_demo_contains_retrieval_v1_v2_evidence(self):
+        bundle = load_demo_bundle(find_default_demo_run(ROOT))
+        retrieval = load_retrieval_evaluation(ROOT)
+        page = render_static_demo(bundle, retrieval)
+        self.assertIn("Retrieval Evaluation · V1 → V2", page)
+        self.assertIn("28.6%", page)
+        self.assertIn("71.4%", page)
+        self.assertIn("85.7%", page)
 
 
 if __name__ == "__main__":
