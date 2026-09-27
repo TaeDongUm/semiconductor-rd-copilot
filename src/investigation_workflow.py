@@ -7,6 +7,13 @@ from typing import Any
 
 from .case_definition import write_case
 from .evidence_extraction import build_evidence_prompt
+from .evidence_collection import (
+    build_expected_papers,
+    collect_evidence_responses,
+    write_evidence_jsonl,
+    write_validation_report,
+)
+from .decision_synthesis import synthesize, write_json as write_decision_json, write_markdown
 from .openalex import OpenAlexClient, OpenAlexError, PaperRecord
 from .problem_decomposition import (
     build_problem_decomposition_prompt,
@@ -111,6 +118,8 @@ def prepare_evidence_prompts(case_path: Path, papers_path: Path, run_dir: Path) 
 
     output_dir = run_dir / "05_evidence_prompts"
     output_dir.mkdir(parents=True, exist_ok=True)
+    response_dir = run_dir / "06_evidence_responses"
+    response_dir.mkdir(parents=True, exist_ok=True)
     paths: list[Path] = []
 
     for index, paper in enumerate(rows, start=1):
@@ -132,6 +141,8 @@ def prepare_evidence_prompts(case_path: Path, papers_path: Path, run_dir: Path) 
         "paper_count": len(rows),
         "prompt_count": len(paths),
         "prompts": [str(path.relative_to(run_dir)) for path in paths],
+        "response_dir": str(response_dir.relative_to(run_dir)),
+        "response_filename_rule": "Save each JSON response using the prompt paper id, e.g. R01.json",
     }
     (run_dir / "05_evidence_prompt_manifest.json").write_text(
         json.dumps(manifest, ensure_ascii=False, indent=2) + "\n",
@@ -139,6 +150,48 @@ def prepare_evidence_prompts(case_path: Path, papers_path: Path, run_dir: Path) 
     )
     return paths
 
+
+
+def finalize_manual_evidence(
+    case_path: Path,
+    papers_path: Path,
+    response_dir: Path,
+    run_dir: Path,
+) -> dict[str, Path | int]:
+    case = json.loads(case_path.read_text(encoding="utf-8"))
+    expected_papers = build_expected_papers(papers_path)
+    result = collect_evidence_responses(
+        response_dir=response_dir,
+        case=case,
+        expected_papers=expected_papers,
+    )
+
+    evidence_path = run_dir / "06_evidence.jsonl"
+    validation_path = run_dir / "06_evidence_validation.json"
+    write_evidence_jsonl(result.accepted, evidence_path)
+    write_validation_report(result, validation_path)
+
+    if not result.accepted:
+        raise ValueError(
+            "no valid evidence responses were accepted; review 06_evidence_validation.json"
+        )
+
+    decision = synthesize(case, result.accepted)
+    decision_path = run_dir / "07_decision.json"
+    report_path = run_dir / "08_investigation_brief.md"
+    write_decision_json(decision, decision_path)
+    write_markdown(case, decision, report_path)
+
+    return {
+        "accepted_count": len(result.accepted),
+        "rejected_count": len(result.rejected_files),
+        "error_count": result.error_count,
+        "warning_count": result.warning_count,
+        "evidence_path": evidence_path,
+        "validation_path": validation_path,
+        "decision_path": decision_path,
+        "report_path": report_path,
+    }
 
 def main() -> None:
     parser = argparse.ArgumentParser(
@@ -167,6 +220,15 @@ def main() -> None:
     evidence.add_argument("--case", type=Path, required=True)
     evidence.add_argument("--papers", type=Path, required=True)
     evidence.add_argument("--run-dir", type=Path, required=True)
+
+    finalize = sub.add_parser(
+        "finalize",
+        help="Validate ChatGPT evidence JSON responses and build the final investigation brief",
+    )
+    finalize.add_argument("--case", type=Path, required=True)
+    finalize.add_argument("--papers", type=Path, required=True)
+    finalize.add_argument("--responses", type=Path, required=True)
+    finalize.add_argument("--run-dir", type=Path, required=True)
 
     args = parser.parse_args()
 
@@ -203,6 +265,23 @@ def main() -> None:
         paths = prepare_evidence_prompts(args.case, args.papers, args.run_dir)
         print(f"evidence prompts: {len(paths)}")
         print(f"directory: {args.run_dir / '05_evidence_prompts'}")
+        return
+
+    if args.command == "finalize":
+        try:
+            outputs = finalize_manual_evidence(
+                args.case, args.papers, args.responses, args.run_dir
+            )
+        except ValueError as exc:
+            raise SystemExit(str(exc)) from exc
+        print(f"accepted evidence responses: {outputs['accepted_count']}")
+        print(f"rejected evidence responses: {outputs['rejected_count']}")
+        print(f"validation errors: {outputs['error_count']}")
+        print(f"validation warnings: {outputs['warning_count']}")
+        print(f"evidence: {outputs['evidence_path']}")
+        print(f"validation: {outputs['validation_path']}")
+        print(f"decision: {outputs['decision_path']}")
+        print(f"report: {outputs['report_path']}")
         return
 
 
