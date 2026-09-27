@@ -1,0 +1,27 @@
+{
+  "case_id": "HBM-THERMAL-001",
+  "evaluated_papers": 5,
+  "golden_papers_in_case": 7,
+  "citation_validity": 1.0,
+  "constraint_precision": 1.0,
+  "constraint_recall": 0.9444444444444444,
+  "constraint_f1": 0.9714285714285714,
+  "unsupported_constraint_mappings": 0,
+  "missed_constraint_mappings": 1,
+  "numeric_precision": 1.0,
+  "numeric_recall": 1.0,
+  "hypothesis_traceability": 1.0,
+  "deterministic_gate": "PASS",
+  "missed_pairs": [
+    [
+      "10.1109/tcpmt.2022.3201673",
+      "C4"
+    ]
+  ],
+  "extra_pairs": [],
+  "notes": [
+    "Evaluation is conditional on papers already retrieved; retrieval recall is measured separately.",
+    "Constraint mapping is scored as DOI × constraint_id atomic pairs against human-reviewed Golden Evidence.",
+    "This deterministic harness does not prove free-text semantic equivalence; it checks citations, coverage, metrics, and hypothesis traceability."
+  ]
+}

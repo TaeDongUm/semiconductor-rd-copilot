@@ -58,3 +58,23 @@ def test_output_evaluator_catches_numeric_hallucination():
     assert result.numeric_precision == 0.0
     assert result.numeric_recall == 0.0
     assert result.deterministic_gate == 'FAIL'
+
+
+def test_live_output_v2_improves_constraint_coverage_without_precision_loss():
+    golden = _jsonl('data/evidence/hbm_thermal_verified_seed.jsonl')
+    actual = _jsonl('runs/hbm_thermal_output_v2_2026-09-27/06_evidence.jsonl')
+    decision = json.loads(Path('runs/hbm_thermal_output_v2_2026-09-27/07_decision.json').read_text())
+
+    result = evaluate_output(golden=golden, actual=actual, decision=decision)
+
+    assert result.citation_validity == 1.0
+    assert result.constraint_precision == 1.0
+    assert round(result.constraint_recall, 4) == 0.9444
+    assert round(result.constraint_f1, 4) == 0.9714
+    assert result.unsupported_constraint_mappings == 0
+    assert result.missed_constraint_mappings == 1
+    assert ('10.1109/tcpmt.2022.3201673', 'C4') in result.missed_pairs
+    assert result.numeric_precision == 1.0
+    assert result.numeric_recall == 1.0
+    assert result.hypothesis_traceability == 1.0
+    assert result.deterministic_gate == 'PASS'

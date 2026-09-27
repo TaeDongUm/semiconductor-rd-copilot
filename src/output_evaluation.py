@@ -166,10 +166,33 @@ def _pct(value: float) -> str:
     return f"{value * 100:.1f}%"
 
 
-def render_markdown(result: OutputEvaluation) -> str:
+def render_markdown(result: OutputEvaluation, *, version: str = "V1") -> str:
     missed = "\n".join(f"- `{doi}` → `{constraint}`" for doi, constraint in result.missed_pairs) or "- 없음"
     extra = "\n".join(f"- `{doi}` → `{constraint}`" for doi, constraint in result.extra_pairs) or "- 없음"
-    return f"""# AI Output Evaluation V1\n\n## 결과\n\n| Metric | Result |\n| --- | ---: |\n| Evaluated retrieved papers | {result.evaluated_papers} |\n| Citation validity | {_pct(result.citation_validity)} |\n| Constraint mapping precision | {_pct(result.constraint_precision)} |\n| Constraint mapping recall | {_pct(result.constraint_recall)} |\n| Constraint mapping F1 | {_pct(result.constraint_f1)} |\n| Unsupported constraint mappings | {result.unsupported_constraint_mappings} |\n| Missed constraint mappings | {result.missed_constraint_mappings} |\n| Numeric precision | {_pct(result.numeric_precision)} |\n| Numeric recall | {_pct(result.numeric_recall)} |\n| Hypothesis traceability | {_pct(result.hypothesis_traceability)} |\n| Deterministic quality gate | **{result.deterministic_gate}** |\n\n## 놓친 Golden Constraint Mapping\n\n{missed}\n\n## 근거 없이 추가된 Mapping\n\n{extra}\n\n## 해석\n\n- 현재 출력은 **근거 없는 constraint를 추가하지 않는 precision은 높지만, source가 지원하는 constraint 일부를 놓쳐 recall이 부족**합니다.\n- 이 평가는 Retrieval 이후 단계만 측정합니다. 논문 검색 Recall은 별도 Retrieval Benchmark에서 관리합니다.\n- 자유문장 의미가 원문과 완전히 동일한지까지 자동 판정하는 평가는 아닙니다. 현재 단계에서는 사람이 검토한 Golden Evidence의 DOI·constraint·numeric metric과 output traceability를 deterministic하게 비교합니다.\n\n## 다음 개선 목표\n\nEvidence Extraction Prompt에 `Constraint Coverage Check`를 추가해, source가 명시적으로 지원하는 constraint가 누락되지 않았는지 출력 직전에 한 번 더 확인합니다. 단, 근거가 없는 constraint를 채우도록 강제하지 않습니다.\n"""
+    if result.deterministic_gate == "PASS":
+        interpretation = (
+            "- 현재 출력은 deterministic quality gate를 통과했습니다. "
+            "근거 없는 constraint를 추가하지 않는 precision을 유지하면서 Golden Evidence coverage를 확보했습니다.\n"
+            "- 남은 miss가 있다면 source wording과 Golden label을 사람이 다시 확인합니다. "
+            "점수를 높이기 위해 근거 없는 constraint를 강제로 채우지 않습니다."
+        )
+        next_step = (
+            "현재 Prompt를 기준선으로 고정하고, 실제 End-to-End Run에서 동일 평가를 재사용합니다. "
+            "Golden label이 source보다 강한 해석을 포함하는지도 별도로 점검합니다."
+        )
+    else:
+        interpretation = (
+            "- 현재 출력은 **근거 없는 constraint를 추가하지 않는 precision은 높지만, "
+            "source가 지원하는 constraint 일부를 놓쳐 recall이 부족**합니다.\n"
+            "- 누락 유형을 분석한 뒤 source가 명시적으로 지원하는 constraint만 coverage check에서 복구합니다."
+        )
+        next_step = (
+            "Evidence Extraction Prompt의 `Constraint Coverage Check`를 적용해, source가 명시적으로 지원하는 "
+            "constraint가 누락되지 않았는지 출력 직전에 한 번 더 확인합니다. 단, 근거가 없는 constraint를 "
+            "채우도록 강제하지 않습니다."
+        )
+
+    return f"""# AI Output Evaluation {version}\n\n## 결과\n\n| Metric | Result |\n| --- | ---: |\n| Evaluated retrieved papers | {result.evaluated_papers} |\n| Citation validity | {_pct(result.citation_validity)} |\n| Constraint mapping precision | {_pct(result.constraint_precision)} |\n| Constraint mapping recall | {_pct(result.constraint_recall)} |\n| Constraint mapping F1 | {_pct(result.constraint_f1)} |\n| Unsupported constraint mappings | {result.unsupported_constraint_mappings} |\n| Missed constraint mappings | {result.missed_constraint_mappings} |\n| Numeric precision | {_pct(result.numeric_precision)} |\n| Numeric recall | {_pct(result.numeric_recall)} |\n| Hypothesis traceability | {_pct(result.hypothesis_traceability)} |\n| Deterministic quality gate | **{result.deterministic_gate}** |\n\n## 놓친 Golden Constraint Mapping\n\n{missed}\n\n## 근거 없이 추가된 Mapping\n\n{extra}\n\n## 해석\n\n{interpretation}\n- 이 평가는 Retrieval 이후 단계만 측정합니다. 논문 검색 Recall은 별도 Retrieval Benchmark에서 관리합니다.\n- 자유문장 의미가 원문과 완전히 동일한지까지 자동 판정하는 평가는 아닙니다. 현재 단계에서는 사람이 검토한 Golden Evidence의 DOI·constraint·numeric metric과 output traceability를 deterministic하게 비교합니다.\n\n## 다음 단계\n\n{next_step}\n"""
 
 
 def main() -> None:
@@ -179,6 +202,7 @@ def main() -> None:
     parser.add_argument("--decision", default="runs/hbm_thermal_live_demo_2026-09-27/07_decision.json")
     parser.add_argument("--json-out", default="evals/output/history/hbm_thermal_output_v1_2026-09-27.json")
     parser.add_argument("--report-out", default="reports/output_evaluation_v1.md")
+    parser.add_argument("--version", default="V1")
     args = parser.parse_args()
 
     golden = _load_jsonl(Path(args.golden))
@@ -191,7 +215,7 @@ def main() -> None:
     json_out.parent.mkdir(parents=True, exist_ok=True)
     report_out.parent.mkdir(parents=True, exist_ok=True)
     json_out.write_text(json.dumps(result.to_dict(), ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-    report_out.write_text(render_markdown(result), encoding="utf-8")
+    report_out.write_text(render_markdown(result, version=args.version), encoding="utf-8")
 
     print(json.dumps(result.to_dict(), ensure_ascii=False, indent=2))
 

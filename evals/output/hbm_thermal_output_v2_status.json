@@ -1,8 +1,16 @@
 {
   "benchmark_id": "HBM-THERMAL-OUTPUT-V2",
-  "status": "awaiting_rerun",
-  "change": "Evidence extraction prompt now includes an explicit Constraint Coverage Check before JSON output.",
-  "anti_overfit_rule": "The prompt must not force missing constraints to be filled; unsupported constraints remain omitted/unknown.",
-  "comparison_target": "HBM-THERMAL-OUTPUT-V1",
-  "next_step": "Regenerate evidence for the same retrieved papers with the revised prompt, finalize the decision output, then rerun src.output_evaluation against the same Golden Evidence."
+  "status": "completed",
+  "evaluated_at": "2026-09-27",
+  "golden_source": "data/evidence/hbm_thermal_verified_seed.jsonl",
+  "actual_output": "runs/hbm_thermal_output_v2_2026-09-27/06_evidence.jsonl",
+  "decision_output": "runs/hbm_thermal_output_v2_2026-09-27/07_decision.json",
+  "change": "Evidence extraction prompt includes an explicit Constraint Coverage Check before JSON output.",
+  "anti_overfit_rule": "Unsupported constraints remain omitted/unknown; coverage is not filled merely to raise the score.",
+  "result_file": "evals/output/history/hbm_thermal_output_v2_2026-09-27.json",
+  "report_file": "reports/output_evaluation_v2.md",
+  "comparison_file": "evals/output/hbm_thermal_output_v1_vs_v2.json",
+  "result": "PASS",
+  "summary": "Constraint mapping recall improved from 77.8% (14/18) to 94.4% (17/18) while precision stayed 100%; deterministic gate changed FAIL to PASS.",
+  "remaining_miss_review": "The remaining C4 miss for DOI 10.1109/tcpmt.2022.3201673 is intentionally not forced into V2. The source text supplied to the extractor explicitly mentions structural reliability and package dimensions, but does not explicitly establish manufacturability. Golden v1 is kept unchanged for fair V1/V2 comparison; this label should be reviewed before expanding the benchmark."
 }
