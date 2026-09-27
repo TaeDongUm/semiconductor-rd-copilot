@@ -1,0 +1,7 @@
+{
+  "benchmark_id": "HBM-THERMAL-RETRIEVAL-V1",
+  "executed_in_build_environment": false,
+  "reason": "api.openalex.org DNS is unavailable in the build container; use src.retrieval_benchmark or demo/retrieval-benchmark.html in an internet-enabled environment.",
+  "expected_runtime_cost": "12 OpenAlex search calls for default plan; within anonymous/free budget under current pricing.",
+  "result_policy": "Do not report Recall values until a real OpenAlex run completes."
+}

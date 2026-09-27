@@ -1,0 +1,31 @@
+{
+  "benchmark_id": "HBM-THERMAL-RETRIEVAL-V1",
+  "golden_version": "HBM-THERMAL-GOLDEN-V1",
+  "evaluation_k": [
+    10,
+    20,
+    50
+  ],
+  "access_policy": "all_metadata_no_oa_filter",
+  "strategies": {
+    "single_keyword": [
+      "\"high bandwidth memory\" \"thermal management\""
+    ],
+    "multi_query_keyword": [
+      "\"high bandwidth memory\" \"thermal management\"",
+      "\"HBM\" \"thermal management\"",
+      "\"high bandwidth memory\" \"thermal management\" \"thermal resistance\"",
+      "\"high bandwidth memory\" \"thermal management\" \"hybrid bonding\"",
+      "\"high bandwidth memory\" \"thermal management\" \"thermo-mechanical reliability\"",
+      "\"high bandwidth memory\" \"thermal management\" \"manufacturability\"",
+      "\"high bandwidth memory\" \"thermal management\" \"signal integrity\"",
+      "\"high bandwidth memory\" \"thermal management\" \"yield\"",
+      "\"HBM\" \"thermal resistance\" \"junction temperature\"",
+      "\"HBM\" \"thermal resistance\" \"interconnect\""
+    ],
+    "semantic": [
+      "Investigate thermal-management approaches for increasingly stacked high bandwidth memory, focusing on heat accumulation and thermal resistance while considering thermo-mechanical reliability, manufacturability, signal integrity, cost, and yield trade-offs."
+    ],
+    "hybrid": "multi_query_keyword + semantic"
+  }
+}

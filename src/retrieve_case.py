@@ -12,7 +12,7 @@ from .retrieval_eval import evaluate_retrieval, load_accepted_golden_ids
 
 DEFAULT_CASE_FILE = Path("data/cases/hbm_thermal.json")
 DEFAULT_OUTPUT_FILE = Path("data/openalex_case_results.jsonl")
-DEFAULT_GOLDEN_FILE = Path("evals/golden/hbm_thermal/v1/candidates.jsonl")
+DEFAULT_GOLDEN_FILE = Path("evals/golden/hbm_thermal/v1/golden.jsonl")
 
 
 def _merge_papers(groups: list[list[PaperRecord]], limit: int) -> list[PaperRecord]:

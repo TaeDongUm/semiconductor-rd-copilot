@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>HBM Retrieval Benchmark</title>
+<style>
+body{font-family:Arial,sans-serif;max-width:1080px;margin:40px auto;padding:0 20px;line-height:1.55;color:#111827}
+h1,h2{margin-bottom:.4rem} .muted{color:#6b7280} .card{border:1px solid #e5e7eb;border-radius:14px;padding:18px;margin:16px 0}
+button{padding:10px 16px;border:0;border-radius:10px;background:#111827;color:white;font-weight:700;cursor:pointer}
+button:disabled{opacity:.5;cursor:not-allowed} table{border-collapse:collapse;width:100%;margin-top:14px} th,td{border-bottom:1px solid #e5e7eb;padding:10px;text-align:left} code{background:#f3f4f6;padding:2px 5px;border-radius:5px} .ok{color:#047857} .warn{color:#b45309} .error{color:#b91c1c;white-space:pre-wrap} progress{width:100%;height:14px}
+</style>
+</head><body>
+<h1>HBM Thermal Retrieval Benchmark</h1>
+<p class="muted">Golden Corpus v1(7편)에 대해 OpenAlex 검색 전략의 Recall@K를 브라우저에서 직접 비교합니다. 결과는 로컬 브라우저에서 계산되며 별도 설치가 필요 없습니다.</p>
+<div class="card"><b>비교 전략</b><ol><li>Single keyword</li><li>Multi-query keyword</li><li>Semantic</li><li>Hybrid (Multi-query + Semantic)</li></ol><p>평가 시 OA 필터를 사용하지 않습니다. 접근권한과 검색 품질을 분리하기 위해서입니다.</p></div>
+<div class="card"><button id="run">OpenAlex Benchmark 실행</button><p id="status" class="muted">실행 전</p><progress id="progress" value="0" max="1" style="display:none"></progress><div id="err" class="error"></div></div>
+<div id="results"></div>
+<script>
+const CONFIG={"caseId": "HBM-THERMAL-001", "golden": [{"id": "P01", "title": "Thermal Issues Related to Hybrid Bonding of 3D-Stacked High Bandwidth Memory: A Comprehensive Review", "doi": "10.3390/electronics14132682"}, {"id": "P02", "title": "Thermal Management and Reliability Engineering of Advanced HBM Packages: Materials, Interfaces, and Integrated Design Strategies", "doi": "10.3390/mi17091065"}, {"id": "P03", "title": "C2W Hybrid Bonding Interconnect Technology for Higher Density and Better Thermal Dissipation of High Bandwidth Memory", "doi": "10.1109/ECTC51909.2023.00179"}, {"id": "P04", "title": "Optimization of Cu protrusion of wafer-to-wafer hybrid bonding for HBM packages application", "doi": "10.1016/j.mssp.2022.107063"}, {"id": "P05", "title": "3D Integrated Process and Hybrid Bonding of High Bandwidth Memory (HBM)", "doi": "10.1007/s13391-025-00557-9"}, {"id": "P06", "title": "Thermal and Signal Integrity Co-Design and Verification of Embedded Cooling Structure With Thermal Transmission Line for High Bandwidth Memory Module", "doi": "10.1109/TCPMT.2022.3201673"}, {"id": "P09", "title": "Heat Dissipation Improvement Using Plugged Sidewall for Three-dimensional (3D) Package of High-stacked High Bandwidth Memory (HBM)", "doi": "10.5573/JSTS.2026.26.2.97"}], "single": "\"high bandwidth memory\" \"thermal management\"", "multi": ["\"high bandwidth memory\" \"thermal management\"", "\"HBM\" \"thermal management\"", "\"high bandwidth memory\" \"thermal management\" \"thermal resistance\"", "\"high bandwidth memory\" \"thermal management\" \"hybrid bonding\"", "\"high bandwidth memory\" \"thermal management\" \"thermo-mechanical reliability\"", "\"high bandwidth memory\" \"thermal management\" \"manufacturability\"", "\"high bandwidth memory\" \"thermal management\" \"signal integrity\"", "\"high bandwidth memory\" \"thermal management\" \"yield\"", "\"HBM\" \"thermal resistance\" \"junction temperature\"", "\"HBM\" \"thermal resistance\" \"interconnect\""], "semantic": "Investigate thermal-management approaches for increasingly stacked high bandwidth memory, focusing on heat accumulation and thermal resistance while considering thermo-mechanical reliability, manufacturability, signal integrity, cost, and yield trade-offs.", "ks": [10, 20, 50]};
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+const normDoi=v=>{if(!v)return null; return v.toLowerCase().replace(/^https:\/\/doi\.org\//,'').trim();};
+const identity=w=>normDoi(w.doi)?'doi:'+normDoi(w.doi):'openalex:'+String(w.id||'').toLowerCase();
+const goldenIds=new Set(CONFIG.golden.map(x=>'doi:'+normDoi(x.doi)));
+async function oaSearch(query,mode,perPage=50){
+  const p=new URLSearchParams(); p.set(mode==='semantic'?'search.semantic':'search',query); p.set('per_page',String(perPage));
+  if(mode==='keyword') p.set('sort','relevance_score:desc');
+  const url='https://api.openalex.org/works?'+p.toString();
+  const r=await fetch(url,{headers:{'Accept':'application/json'}}); if(!r.ok) throw new Error('OpenAlex '+r.status+': '+await r.text());
+  const j=await r.json(); return (j.results||[]).map(w=>({...w,_query:query}));
+}
+function merge(groups,limit=50){
+ const m=new Map();
+ for(const group of groups) for(const w of group){const key=identity(w); if(!m.has(key))m.set(key,{...w,_queries:new Set([w._query])}); else m.get(key)._queries.add(w._query);}
+ return [...m.values()].sort((a,b)=>{const q=b._queries.size-a._queries.size;if(q)return q;return (b.relevance_score||0)-(a.relevance_score||0)||(b.cited_by_count||0)-(a.cited_by_count||0);}).slice(0,limit);
+}
+function evalStrategy(name,works){return CONFIG.ks.map(k=>{const top=works.slice(0,k);const ids=new Set(top.map(identity));const matched=[...goldenIds].filter(x=>ids.has(x));return {name,k,matched:matched.length,recall:matched.length/goldenIds.size,missing:[...goldenIds].filter(x=>!ids.has(x))};});}
+function render(all){
+ let h='<div class="card"><h2>Recall 비교</h2><table><thead><tr><th>Strategy</th><th>Recall@10</th><th>Recall@20</th><th>Recall@50</th></tr></thead><tbody>';
+ for(const [name,rows] of Object.entries(all)){h+='<tr><td>'+name+'</td>';for(const row of rows)h+='<td>'+row.matched+'/'+goldenIds.size+' ('+(row.recall*100).toFixed(1)+'%)</td>';h+='</tr>';} h+='</tbody></table></div>';
+ h+='<div class="card"><h2>Golden 7편</h2><ol>'+CONFIG.golden.map(g=>'<li><b>'+g.id+'</b> '+g.title+'<br><code>'+g.doi+'</code></li>').join('')+'</ol></div>';
+ h+='<div class="card"><h2>Recall@20에서 놓친 논문</h2>';
+ for(const [name,rows] of Object.entries(all)){const r=rows.find(x=>x.k===20);h+='<p><b>'+name+'</b>: '+(r.missing.length?r.missing.join(', '):'<span class="ok">없음</span>')+'</p>';} h+='</div>';
+ document.getElementById('results').innerHTML=h;
+}
+async function run(){
+ const btn=document.getElementById('run'),status=document.getElementById('status'),prog=document.getElementById('progress'),err=document.getElementById('err');btn.disabled=true;err.textContent='';prog.style.display='block';prog.max=CONFIG.multi.length+2;prog.value=0;
+ try{status.textContent='Single keyword 검색 중';const single=await oaSearch(CONFIG.single,'keyword',50);prog.value++;
+ const multiGroups=[]; for(let i=0;i<CONFIG.multi.length;i++){status.textContent=`Multi-query ${i+1}/${CONFIG.multi.length} 검색 중`;multiGroups.push(await oaSearch(CONFIG.multi[i],'keyword',12));prog.value++; await sleep(1100);}
+ const multi=merge(multiGroups,50); status.textContent='Semantic 검색 중';const semantic=await oaSearch(CONFIG.semantic,'semantic',50);prog.value++;const hybrid=merge([multi,semantic],50);
+ const all={single_keyword:evalStrategy('single_keyword',single),multi_query_keyword:evalStrategy('multi_query_keyword',multi),semantic:evalStrategy('semantic',semantic),hybrid:evalStrategy('hybrid',hybrid)};render(all); status.textContent='완료 — 이 결과를 캡처하거나 JSON으로 기록하세요.';
+ }catch(e){err.textContent=String(e);status.textContent='실패';}finally{btn.disabled=false;}
+}
+document.getElementById('run').addEventListener('click',run);
+</script></body></html>
