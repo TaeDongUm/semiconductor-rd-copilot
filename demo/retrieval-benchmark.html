@@ -14,7 +14,13 @@ button:disabled{opacity:.5;cursor:not-allowed} table{border-collapse:collapse;wi
 <h1>HBM Thermal Retrieval Benchmark</h1>
 <p class="muted">Golden Corpus v1(7편)에 대해 OpenAlex 검색 전략의 Recall@K를 브라우저에서 직접 비교합니다. 결과는 로컬 브라우저에서 계산되며 별도 설치가 필요 없습니다.</p>
 <div class="card"><b>비교 전략</b><ol><li>Single keyword</li><li>Multi-query keyword</li><li>Semantic</li><li>Hybrid (Multi-query + Semantic)</li></ol><p>평가 시 OA 필터를 사용하지 않습니다. 접근권한과 검색 품질을 분리하기 위해서입니다.</p></div>
-<div class="card"><button id="run">OpenAlex Benchmark 실행</button><p id="status" class="muted">실행 전</p><progress id="progress" value="0" max="1" style="display:none"></progress><div id="err" class="error"></div></div>
+<div class="card">
+<label for="apiKey"><b>OpenAlex API Key</b> <span class="muted">(권장 · 브라우저 메모리에만 사용, 파일에 저장하지 않음)</span></label>
+<input id="apiKey" type="password" autocomplete="off" placeholder="무료 API Key를 입력하세요" style="display:block;width:100%;box-sizing:border-box;margin:10px 0 12px;padding:10px;border:1px solid #d1d5db;border-radius:8px" />
+<button id="run">OpenAlex Benchmark 실행</button>
+<p id="status" class="muted">실행 전</p><progress id="progress" value="0" max="1" style="display:none"></progress><div id="err" class="error"></div>
+<p class="muted">API Key 없이도 시도할 수 있지만 익명 검색은 429 제한에 걸릴 수 있습니다. Key는 이 페이지에서만 요청 파라미터로 사용되며 저장하지 않습니다.</p>
+</div>
 <div id="results"></div>
 <script>
 const CONFIG={"caseId": "HBM-THERMAL-001", "golden": [{"id": "P01", "title": "Thermal Issues Related to Hybrid Bonding of 3D-Stacked High Bandwidth Memory: A Comprehensive Review", "doi": "10.3390/electronics14132682"}, {"id": "P02", "title": "Thermal Management and Reliability Engineering of Advanced HBM Packages: Materials, Interfaces, and Integrated Design Strategies", "doi": "10.3390/mi17091065"}, {"id": "P03", "title": "C2W Hybrid Bonding Interconnect Technology for Higher Density and Better Thermal Dissipation of High Bandwidth Memory", "doi": "10.1109/ECTC51909.2023.00179"}, {"id": "P04", "title": "Optimization of Cu protrusion of wafer-to-wafer hybrid bonding for HBM packages application", "doi": "10.1016/j.mssp.2022.107063"}, {"id": "P05", "title": "3D Integrated Process and Hybrid Bonding of High Bandwidth Memory (HBM)", "doi": "10.1007/s13391-025-00557-9"}, {"id": "P06", "title": "Thermal and Signal Integrity Co-Design and Verification of Embedded Cooling Structure With Thermal Transmission Line for High Bandwidth Memory Module", "doi": "10.1109/TCPMT.2022.3201673"}, {"id": "P09", "title": "Heat Dissipation Improvement Using Plugged Sidewall for Three-dimensional (3D) Package of High-stacked High Bandwidth Memory (HBM)", "doi": "10.5573/JSTS.2026.26.2.97"}], "single": "\"high bandwidth memory\" \"thermal management\"", "multi": ["\"high bandwidth memory\" \"thermal management\"", "\"HBM\" \"thermal management\"", "\"high bandwidth memory\" \"thermal management\" \"thermal resistance\"", "\"high bandwidth memory\" \"thermal management\" \"hybrid bonding\"", "\"high bandwidth memory\" \"thermal management\" \"thermo-mechanical reliability\"", "\"high bandwidth memory\" \"thermal management\" \"manufacturability\"", "\"high bandwidth memory\" \"thermal management\" \"signal integrity\"", "\"high bandwidth memory\" \"thermal management\" \"yield\"", "\"HBM\" \"thermal resistance\" \"junction temperature\"", "\"HBM\" \"thermal resistance\" \"interconnect\""], "semantic": "Investigate thermal-management approaches for increasingly stacked high bandwidth memory, focusing on heat accumulation and thermal resistance while considering thermo-mechanical reliability, manufacturability, signal integrity, cost, and yield trade-offs.", "ks": [10, 20, 50]};
@@ -25,9 +31,24 @@ const goldenIds=new Set(CONFIG.golden.map(x=>'doi:'+normDoi(x.doi)));
 async function oaSearch(query,mode,perPage=50){
   const p=new URLSearchParams(); p.set(mode==='semantic'?'search.semantic':'search',query); p.set('per_page',String(perPage));
   if(mode==='keyword') p.set('sort','relevance_score:desc');
+  const apiKey=document.getElementById('apiKey').value.trim();
+  if(apiKey) p.set('api_key',apiKey);
   const url='https://api.openalex.org/works?'+p.toString();
-  const r=await fetch(url,{headers:{'Accept':'application/json'}}); if(!r.ok) throw new Error('OpenAlex '+r.status+': '+await r.text());
-  const j=await r.json(); return (j.results||[]).map(w=>({...w,_query:query}));
+  for(let attempt=0;attempt<4;attempt++){
+    const r=await fetch(url,{headers:{'Accept':'application/json'}});
+    if(r.ok){const j=await r.json(); return (j.results||[]).map(w=>({...w,_query:query}));}
+    const body=await r.text();
+    if(r.status===429 && attempt<3){
+      let retry=Number(r.headers.get('Retry-After'));
+      if(!Number.isFinite(retry)||retry<=0){try{retry=Number(JSON.parse(body).retryAfter);}catch(_){retry=0;}}
+      if(!Number.isFinite(retry)||retry<=0) retry=Math.min(2**attempt,30);
+      document.getElementById('status').textContent=`OpenAlex 429 — ${retry}초 후 재시도 (${attempt+1}/3)`;
+      await sleep(retry*1000);
+      continue;
+    }
+    throw new Error('OpenAlex '+r.status+': '+body);
+  }
+  throw new Error('OpenAlex 요청이 반복적으로 제한되었습니다. API Key를 확인하거나 잠시 후 다시 시도하세요.');
 }
 function merge(groups,limit=50){
  const m=new Map();

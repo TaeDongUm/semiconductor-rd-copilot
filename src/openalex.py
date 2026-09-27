@@ -2,9 +2,11 @@ from __future__ import annotations
 
 import json
 import os
+import time
 from dataclasses import dataclass, asdict
 from typing import Callable, Iterable
 from urllib.parse import urlencode
+from urllib.error import HTTPError
 from urllib.request import Request, urlopen
 
 
@@ -91,10 +93,14 @@ class OpenAlexClient:
         api_key: str | None = None,
         timeout: int = 20,
         opener: Callable = urlopen,
+        max_retries: int = 3,
+        sleep_fn: Callable[[float], None] = time.sleep,
     ) -> None:
         self.api_key = api_key or os.getenv("OPENALEX_API_KEY")
         self.timeout = timeout
         self.opener = opener
+        self.max_retries = max_retries
+        self.sleep_fn = sleep_fn
 
     def build_url(
         self,
@@ -152,11 +158,27 @@ class OpenAlexClient:
             },
         )
 
-        try:
-            with self.opener(request, timeout=self.timeout) as response:
-                payload = json.loads(response.read().decode("utf-8"))
-        except Exception as exc:  # network errors differ by runtime
-            raise OpenAlexError(f"OpenAlex request failed: {exc}") from exc
+        payload = None
+        for attempt in range(self.max_retries + 1):
+            try:
+                with self.opener(request, timeout=self.timeout) as response:
+                    payload = json.loads(response.read().decode("utf-8"))
+                break
+            except HTTPError as exc:
+                if exc.code != 429 or attempt >= self.max_retries:
+                    raise OpenAlexError(f"OpenAlex request failed: HTTP {exc.code}") from exc
+
+                retry_after = exc.headers.get("Retry-After") if exc.headers else None
+                try:
+                    wait_seconds = float(retry_after) if retry_after else float(2 ** attempt)
+                except (TypeError, ValueError):
+                    wait_seconds = float(2 ** attempt)
+                self.sleep_fn(min(max(wait_seconds, 1.0), 30.0))
+            except Exception as exc:  # network errors differ by runtime
+                raise OpenAlexError(f"OpenAlex request failed: {exc}") from exc
+
+        if payload is None:
+            raise OpenAlexError("OpenAlex request failed after retries")
 
         results = payload.get("results")
         if not isinstance(results, list):
